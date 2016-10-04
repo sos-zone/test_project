@@ -1,3 +1,7 @@
 test_homepage:
     path:     /
     defaults: { _controller: TestBundle:Default:index }
+
+test_upload:
+    path:     /upload
+    defaults: { _controller: TestBundle:File:upload }
