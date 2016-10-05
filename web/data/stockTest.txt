@@ -1,0 +1,33 @@
+Action successfully complited!
+Total stock(s): 29
+Candidate to add into DB, stock(s): 0
+Skipped stock(s): 29
+Line 1: product with same code is exist at DB
+Line 2: product with same code is exist at DB
+Line 3: product with same code is exist at DB
+Line 4: product with same code is exist at DB
+Line 5: product with same code is exist at DB
+Line 6: product with same code is exist at DB
+Line 7: stock count can't be blank
+Line 8: product with same code is exist at DB
+Line 9: product with same code is exist at DB
+Line 10: product with same code is exist at DB
+Line 11: not correct data
+Line 12: product with same code is exist at DB
+Line 13: product with same code is exist at DB
+Line 14: product with same code is exist at DB
+Line 15: product with same code is exist at DB
+Line 16: product with same code is exist at DB
+Line 17: product with same code is exist at DB
+Line 18: cost is less than 5GBP and (or) Stock count is less than 10
+Line 19: product with same code is exist at DB
+Line 20: product with same code is exist at DB
+Line 21: product with same code is exist at DB
+Line 22: product with same code is exist at DB
+Line 23: product with same code is exist at DB
+Line 24: product with same code is exist at DB
+Line 25: product with same code is exist at DB
+Line 26: product with same code is exist at DB
+Line 27: product with same code is exist at DB
+Line 28: cost is more than 1000GBP
+Line 29: cost is more than 1000GBP

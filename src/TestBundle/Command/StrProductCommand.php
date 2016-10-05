@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Helper\ProductError;
@@ -19,7 +20,13 @@ class StrProductCommand extends ContainerAwareCommand
             ->setName('action:execute')
             ->setDescription('upload file')
             ->addArgument('filePath', InputArgument::REQUIRED, 'Enter csv file path: ')
-            ->addArgument('testMode', InputArgument::OPTIONAL, 'Is it test mode?')
+            ->addOption(
+                'testMode',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Is it test mode?',
+                1
+            )
         ;
     }
 
@@ -32,7 +39,7 @@ class StrProductCommand extends ContainerAwareCommand
             $saved = 0;
             $skipped = 0;
             $errList = [];
-            $testMode = 'test' == $input->getArgument('testMode') ? true : false;
+            $testMode = 'test' == $input->getOption('testMode') ? true : false;
 
             $content = fopen($input->getArgument('filePath'), "r");
 
