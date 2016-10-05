@@ -89,13 +89,13 @@ class StrProductCommand extends ContainerAwareCommand
                     ->setStmtimestamp($now)
                 ;
 
-                if ($product->getCostInGBP()<5 && $product->getStock()<10) {
+                if ($this->getContainer()->get('product.error_manager')->isTooSmallStock($product)) {
                     $skipped++;
                     array_push($errList, new ProductError($rowNum, ProductErrorManager::TOO_SMALL_STOCK));
                     continue;
                 }
 
-                if ($product->getCostInGBP()>1000) {
+                if ($this->getContainer()->get('product.error_manager')->isTooBigCost($product)) {
                     $skipped++;
                     array_push($errList, new ProductError($rowNum, ProductErrorManager::TOO_BIG_STOCK));
                     continue;
@@ -105,8 +105,7 @@ class StrProductCommand extends ContainerAwareCommand
                     $product->setDtmdiscontinued($now);
                 }
 
-                $strProduct = $this->getContainer()->get('product.repository')->findByCode($stock[0]);
-                if ($strProduct) {
+                if ($this->getContainer()->get('product.error_manager')->isProductExists($product)) {
                     $skipped++;
                     array_push($errList, new ProductError($rowNum, ProductErrorManager::DUPLICATE_CODE));
                     continue;
@@ -124,14 +123,14 @@ class StrProductCommand extends ContainerAwareCommand
             $output->writeln('<info>Total stock(s): '.$rowNum.'</info>');
 
             if ($testMode) {
-                $output->writeln('Received stock(s): '.$saved);
+                $output->writeln('Candidate to add into DB, stock(s): '.$saved);
             } else {
                 $output->writeln('Saved stock(s): '.$saved);
             }
 
             $output->writeln('Skipped stock(s): '.$skipped);
             foreach ($errList as $error) {
-                $output->writeln('<fg=red>'.$error->getRowNum().'. '.$error->getMessage().'</fg=red>');
+                $output->writeln('<fg=red>Line '.$error->getRowNum().': '.$error->getMessage().'</fg=red>');
             }
         }
     }

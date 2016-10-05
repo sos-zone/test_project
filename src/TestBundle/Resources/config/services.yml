@@ -8,3 +8,5 @@ services:
 
   product.error_manager:
     class: TestBundle\Services\ProductErrorManager
+    arguments:
+      - @product.repository
