@@ -19,6 +19,7 @@ class StrProductCommand extends ContainerAwareCommand
             ->setName('action:execute')
             ->setDescription('upload file')
             ->addArgument('filePath', InputArgument::REQUIRED, 'Enter csv file path like \'\': ')
+            ->addArgument('testMode', InputArgument::OPTIONAL, 'Is it test mode?')
         ;
     }
 
@@ -31,6 +32,7 @@ class StrProductCommand extends ContainerAwareCommand
             $saved = 0;
             $skipped = 0;
             $errList = [];
+            $testMode = 'test' == $input->getArgument('testMode') ? true : false;
 
             $content = fopen($input->getArgument('filePath'), "r");
 
@@ -110,15 +112,23 @@ class StrProductCommand extends ContainerAwareCommand
                     continue;
                 }
 
-                $em = $this->getContainer()->get('doctrine')->getEntityManager();
-                $em->persist($product);
-                $em->flush();
+                if ($testMode) {
+                    $em = $this->getContainer()->get('doctrine')->getEntityManager();
+                    $em->persist($product);
+                    $em->flush();
+                }
                 $saved++;
             }
 
             $output->writeln('<comment>Action successfully complited!</comment>');
             $output->writeln('<info>Total stock(s): '.$rowNum.'</info>');
-            $output->writeln('Saved stock(s): '.$saved);
+
+            if ($testMode) {
+                $output->writeln('Received stock(s): '.$saved);
+            } else {
+                $output->writeln('Saved stock(s): '.$saved);
+            }
+
             $output->writeln('Skipped stock(s): '.$skipped);
             foreach ($errList as $error) {
                 $output->writeln('<fg=red>'.$error->getRowNum().'. '.$error->getMessage().'</fg=red>');
