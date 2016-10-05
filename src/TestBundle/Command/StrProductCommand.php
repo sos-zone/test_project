@@ -5,7 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use TestBundle\Entity\Tblproductdata;
+use TestBundle\Entity\Product;
 
 class StrProductCommand extends ContainerAwareCommand
 {
@@ -30,6 +30,19 @@ class StrProductCommand extends ContainerAwareCommand
 
             while (($stock = fgetcsv($content)) !== false) {
 
+                /* check is $stock contains 5 items. if no - go to next $stock */
+                $isNext = false;
+                for ($i=0; $i<5; $i++) {
+                    if (!isset($stock[$i])) {
+                        $skipped++;
+                        $isNext = true;
+                        break;
+                    }
+                }
+                if ($isNext) {
+                    continue;
+                }
+
                 if ('Product Code' == $stock[0]) {
                     continue;
                 }
@@ -46,26 +59,22 @@ class StrProductCommand extends ContainerAwareCommand
                     continue;
                 }
 
-                $strProduct = $this->getContainer()->get('strProduct.repository')->findOneBy(
-                    [
-                        'strProductCode' => $stock[0]
-                    ]
-                );
+                $strProduct = $this->getContainer()->get('product.repository')->findByCode($stock[0]);
                 if ($strProduct) {
                     $skipped++;
                     continue;
                 }
 
-                $tblProductData = new Tblproductdata;
-                $tblProductData
-                    ->setStrproductcode($stock[0])
-                    ->setProductName($stock[1])
-                    ->setStrproductdesc($stock[2])
+                $product = new Product;
+                $product
+                    ->setCode($stock[0])
+                    ->setName($stock[1])
+                    ->setDescription($stock[2])
                     ->setStmtimestamp(new \DateTime())
                 ;
 
                 $em = $this->getContainer()->get('doctrine')->getEntityManager();
-                $em->persist($tblProductData);
+                $em->persist($product);
                 $em->flush();
                 $saved++;
             }

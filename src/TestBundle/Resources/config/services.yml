@@ -1,7 +1,7 @@
 services:
-  strProduct.repository:
-    class: TestBundle\Entity\Repository\TblproductdataRepository
+  product.repository:
+    class: TestBundle\Entity\Repository\ProductRepository
     factory_service: doctrine
     factory_method: getRepository
     arguments:
-      - TestBundle\Entity\Tblproductdata
+      - TestBundle\Entity\Product

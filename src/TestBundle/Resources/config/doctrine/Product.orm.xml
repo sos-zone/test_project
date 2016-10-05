@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="TestBundle\Entity\Tblproductdata" table="tblProductData">
+  <entity name="TestBundle\Entity\Product" table="tblProductData">
     <unique-constraints>
       <unique-constraint name="strProductCode" columns="strProductCode"/>
     </unique-constraints>
     <id name="intproductdataid" type="integer" column="intProductDataId">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="productName" type="string" column="strProductName" length="50" nullable="false"/>
-    <field name="productDesc" type="string" column="strProductDesc" length="255" nullable="false"/>
-    <field name="strproductcode" type="string" column="strProductCode" length="10" nullable="false"/>
+    <field name="name" type="string" column="strProductName" length="50" nullable="false"/>
+    <field name="description" type="string" column="strProductDesc" length="255" nullable="false"/>
+    <field name="code" type="string" column="strProductCode" length="10" nullable="false"/>
     <field name="dtmadded" type="datetime" column="dtmAdded" nullable="true"/>
     <field name="dtmdiscontinued" type="datetime" column="dtmDiscontinued" nullable="true"/>
     <field name="stmtimestamp" type="datetime" column="stmTimestamp" nullable="false"/>

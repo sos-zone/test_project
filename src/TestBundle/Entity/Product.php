@@ -6,34 +6,34 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Tblproductdata
+ * Product
  *
  * @ORM\Table(name="tblProductData", uniqueConstraints={@ORM\UniqueConstraint(name="strProductCode", columns={"strProductCode"})})
- * @ORM\Entity(repositoryClass="TestBundle\Entity\Repository\TblproductdataRepository")
+ * @ORM\Entity(repositoryClass="TestBundle\Entity\Repository\ProductRepository")
  */
-class Tblproductdata
+class Product
 {
     /**
      * @var string
      *
      * @ORM\Column(name="strProductName", type="string", length=50, nullable=false)
-     * @JMS\SerializedName("productName")
+     * @JMS\SerializedName("name")
      */
-    private $productName;
+    private $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="strProductDesc", type="string", length=255, nullable=false)
      */
-    private $productDesc;
+    private $description;
 
     /**
      * @var string
      *
      * @ORM\Column(name="strProductCode", type="string", length=10, nullable=false)
      */
-    private $strproductcode;
+    private $code;
 
     /**
      * @var \DateTime
@@ -68,79 +68,79 @@ class Tblproductdata
 
 
     /**
-     * Set productName
+     * Set name
      *
-     * @param string $productName
-     * @return Tblproductdata
+     * @param string $name
+     * @return Product
      */
-    public function setProductName($productName)
+    public function setName($name)
     {
-        $this->productName = $productName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get productName
+     * Get name
      *
      * @return string 
      */
-    public function getProductName()
+    public function getName()
     {
-        return $this->productName;
+        return $this->name;
     }
 
     /**
-     * Set productDesc
+     * Set description
      *
-     * @param string $productDesc
-     * @return Tblproductdata
+     * @param string $description
+     * @return product
      */
-    public function setProductDesc($productDesc)
+    public function setDescription($description)
     {
-        $this->productDesc = $productDesc;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get $productDesc
+     * Get $description
      *
      * @return string 
      */
-    public function getProductDesc()
+    public function getDescription()
     {
-        return $this->productDesc;
+        return $this->description;
     }
 
     /**
-     * Set strproductcode
+     * Set code
      *
-     * @param string $strproductcode
-     * @return Tblproductdata
+     * @param string $code
+     * @return Product
      */
-    public function setStrproductcode($strproductcode)
+    public function setCode($code)
     {
-        $this->strproductcode = $strproductcode;
+        $this->code = $code;
 
         return $this;
     }
 
     /**
-     * Get strproductcode
+     * Get code
      *
      * @return string 
      */
-    public function getStrproductcode()
+    public function getCode()
     {
-        return $this->strproductcode;
+        return $this->code;
     }
 
     /**
      * Set dtmadded
      *
      * @param \DateTime $dtmadded
-     * @return Tblproductdata
+     * @return Product
      */
     public function setDtmadded($dtmadded)
     {
@@ -163,7 +163,7 @@ class Tblproductdata
      * Set dtmdiscontinued
      *
      * @param \DateTime $dtmdiscontinued
-     * @return Tblproductdata
+     * @return Product
      */
     public function setDtmdiscontinued($dtmdiscontinued)
     {
@@ -186,7 +186,7 @@ class Tblproductdata
      * Set stmtimestamp
      *
      * @param \DateTime $stmtimestamp
-     * @return Tblproductdata
+     * @return Product
      */
     public function setStmtimestamp($stmtimestamp)
     {
