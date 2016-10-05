@@ -5,3 +5,6 @@ services:
     factory_method: getRepository
     arguments:
       - TestBundle\Entity\Product
+
+  product.error_manager:
+    class: TestBundle\Services\ProductErrorManager
