@@ -36,6 +36,27 @@ class Product
     private $code;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="strProductStock", type="integer", nullable=false)
+     */
+    private $stock;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="strProductCostInGBP", type="float", nullable=false)
+     */
+    private $costInGBP;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="strProductDiscontinued", type="boolean", nullable=false)
+     */
+    private $discontinued;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
@@ -134,6 +155,75 @@ class Product
     public function getCode()
     {
         return $this->code;
+    }
+
+    /**
+     * Set Stock
+     *
+     * @param integer $stock
+     * @return Product
+     */
+    public function setStock($stock)
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * Get stock
+     *
+     * @return integer
+     */
+    public function getStock()
+    {
+        return $this->stock;
+    }
+
+    /**
+     * Set costInGBP
+     *
+     * @param float $costInGBP
+     * @return Product
+     */
+    public function setCostInGBP($costInGBP)
+    {
+        $this->costInGBP = $costInGBP;
+
+        return $this;
+    }
+
+    /**
+     * Get costInGBP
+     *
+     * @return float
+     */
+    public function getCostInGBP()
+    {
+        return $this->costInGBP;
+    }
+
+    /**
+     * Set discontinued
+     *
+     * @param boolean $discontinued
+     * @return Product
+     */
+    public function setDiscontinued($discontinued)
+    {
+        $this->discontinued = $discontinued;
+
+        return $this;
+    }
+
+    /**
+     * is discontinued
+     *
+     * @return boolean
+     */
+    public function isDiscontinued()
+    {
+        return $this->discontinued;
     }
 
     /**

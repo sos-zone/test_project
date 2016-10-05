@@ -10,6 +10,9 @@
     <field name="name" type="string" column="strProductName" length="50" nullable="false"/>
     <field name="description" type="string" column="strProductDesc" length="255" nullable="false"/>
     <field name="code" type="string" column="strProductCode" length="10" nullable="false"/>
+    <field name="stock" type="integer" column="strProductStock" nullable="false"/>
+    <field name="costInGBP" type="float" column="strProductCostInGBP" nullable="false"/>
+    <field name="discontinued" type="boolean" column="strProductDiscontinued" nullable="false"/>
     <field name="dtmadded" type="datetime" column="dtmAdded" nullable="true"/>
     <field name="dtmdiscontinued" type="datetime" column="dtmDiscontinued" nullable="true"/>
     <field name="stmtimestamp" type="datetime" column="stmTimestamp" nullable="false"/>
