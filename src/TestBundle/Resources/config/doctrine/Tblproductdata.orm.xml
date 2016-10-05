@@ -7,8 +7,8 @@
     <id name="intproductdataid" type="integer" column="intProductDataId">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="strproductname" type="string" column="strProductName" length="50" nullable="false"/>
-    <field name="strproductdesc" type="string" column="strProductDesc" length="255" nullable="false"/>
+    <field name="productName" type="string" column="strProductName" length="50" nullable="false"/>
+    <field name="productDesc" type="string" column="strProductDesc" length="255" nullable="false"/>
     <field name="strproductcode" type="string" column="strProductCode" length="10" nullable="false"/>
     <field name="dtmadded" type="datetime" column="dtmAdded" nullable="true"/>
     <field name="dtmdiscontinued" type="datetime" column="dtmDiscontinued" nullable="true"/>

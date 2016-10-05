@@ -3,6 +3,7 @@
 namespace TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Tblproductdata
@@ -16,15 +17,16 @@ class Tblproductdata
      * @var string
      *
      * @ORM\Column(name="strProductName", type="string", length=50, nullable=false)
+     * @JMS\SerializedName("productName")
      */
-    private $strproductname;
+    private $productName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="strProductDesc", type="string", length=255, nullable=false)
      */
-    private $strproductdesc;
+    private $productDesc;
 
     /**
      * @var string
@@ -66,49 +68,49 @@ class Tblproductdata
 
 
     /**
-     * Set strproductname
+     * Set productName
      *
-     * @param string $strproductname
+     * @param string $productName
      * @return Tblproductdata
      */
-    public function setStrproductname($strproductname)
+    public function setProductName($productName)
     {
-        $this->strproductname = $strproductname;
+        $this->productName = $productName;
 
         return $this;
     }
 
     /**
-     * Get strproductname
+     * Get productName
      *
      * @return string 
      */
-    public function getStrproductname()
+    public function getProductName()
     {
-        return $this->strproductname;
+        return $this->productName;
     }
 
     /**
-     * Set strproductdesc
+     * Set productDesc
      *
-     * @param string $strproductdesc
+     * @param string $productDesc
      * @return Tblproductdata
      */
-    public function setStrproductdesc($strproductdesc)
+    public function setProductDesc($productDesc)
     {
-        $this->strproductdesc = $strproductdesc;
+        $this->productDesc = $productDesc;
 
         return $this;
     }
 
     /**
-     * Get strproductdesc
+     * Get $productDesc
      *
      * @return string 
      */
-    public function getStrproductdesc()
+    public function getProductDesc()
     {
-        return $this->strproductdesc;
+        return $this->productDesc;
     }
 
     /**

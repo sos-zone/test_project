@@ -1,4 +1,7 @@
 services:
-#    test.example:
-#        class: TestBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+  strProduct.repository:
+    class: TestBundle\Entity\Repository\TblproductdataRepository
+    factory_service: doctrine
+    factory_method: getRepository
+    arguments:
+      - TestBundle\Entity\Tblproductdata
