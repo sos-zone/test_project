@@ -18,7 +18,7 @@ class StrProductCommand extends ContainerAwareCommand
         $this
             ->setName('action:execute')
             ->setDescription('upload file')
-            ->addArgument('filePath', InputArgument::REQUIRED, 'Enter csv file path like \'\': ')
+            ->addArgument('filePath', InputArgument::REQUIRED, 'Enter csv file path: ')
             ->addArgument('testMode', InputArgument::OPTIONAL, 'Is it test mode?')
         ;
     }
