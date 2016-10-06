@@ -64,10 +64,6 @@ class StrProductCommand extends ContainerAwareCommand
             } else {
                 foreach ($reader as $stock) {
 
-                    if ('Product Code' == $stock[Product::CODE]) {
-                        continue;
-                    }
-
                     $rowNum++;
                     $now = new \DateTime();
 
@@ -102,7 +98,11 @@ class StrProductCommand extends ContainerAwareCommand
                         continue;
                     }
 
-                    if ('' == $stock[3]) {
+                    if ('' == $stock[Product::CODE] ||
+                        '' == $stock[Product::NAME] ||
+                        '' == $stock[Product::DESCRIPTION] ||
+                        '' == $stock[Product::STOCK] ||
+                        '' == $stock[Product::COST]) {
                         $skipped++;
                         array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
                         continue;
