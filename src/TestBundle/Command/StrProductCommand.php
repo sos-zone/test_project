@@ -41,8 +41,7 @@ class StrProductCommand extends ContainerAwareCommand
             $skipped = 0;
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
-            $newProductsList = [];
-            $updateProductsList = [];
+            $productsList = [];
             $returnErr = false;
 
             $file = new \SplFileObject($input->getArgument('filePath'));
@@ -96,9 +95,12 @@ class StrProductCommand extends ContainerAwareCommand
                         continue;
                     }
 
-                    $product = new Product;
+                    if (! $product = $this->getContainer()->get('product.validator')->isProductExists($stock[Product::CODE])) {
+                        $product = new Product;
+                        $product->setCode($stock[Product::CODE]);
+                    }
+
                     $product
-                        ->setCode($stock[Product::CODE])
                         ->setName($stock[Product::NAME])
                         ->setDescription($stock[Product::DESCRIPTION])
                         ->setStock($stock[Product::STOCK])
@@ -125,27 +127,16 @@ class StrProductCommand extends ContainerAwareCommand
                         $product->setDtmdiscontinued($now);
                     }
 
-                    if ($this->getContainer()->get('product.validator')->isProductExists($product)) {
-                        $skipped++;
-                        array_push($updateProductsList, $product);
-                        continue;
-                    }
-
-                    array_push($newProductsList, $product);
-
+                    array_push($productsList, $product);
                     $saved++;
                 }
 
-                if (!$testMode && !empty($newProductsList)) {
-                    foreach ($newProductsList as $product) {
-                        $this->getContainer()->get('product.repository')->postProduct($product);
+                if (!$testMode && !empty($productList)) {
+                    $em = $this->getContainer()->get('doctrine')->getManager();
+                    foreach ($productList as $product) {
+                        $em->persist($product);
                     }
-                }
-
-                if (!$testMode && !empty($updateProductsList)) {
-                    foreach ($updateProductsList as $product) {
-                        $this->getContainer()->get('product.repository')->putProduct($product);
-                    }
+                    $em->flush();
                 }
 
                 $output->writeln('<comment>Action successfully complited!</comment>');
@@ -154,7 +145,7 @@ class StrProductCommand extends ContainerAwareCommand
                 if ($testMode) {
                     $output->writeln('Candidate to add (update) into DB, stock(s): ' . $saved);
                 } else {
-                    $output->writeln('Saved stock(s): ' . $saved);
+                    $output->writeln('Saved (updated) stock(s): ' . $saved);
                 }
 
                 $output->writeln('Skipped stock(s): ' . $skipped);

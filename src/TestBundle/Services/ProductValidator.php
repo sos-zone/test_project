@@ -55,12 +55,12 @@ class ProductValidator
     }
 
     /**
-     * Check for duplicate product code
-     * @param Product $product
+     * Check is product already exists
+     * @param string $code
      * @return boolean
      */
-    public function isProductExists(Product $product)
+    public function isProductExists($code)
     {
-        return $this->productRepository->findProductByCode($product);
+        return $this->productRepository->findOneByCode($code);
     }
 }
