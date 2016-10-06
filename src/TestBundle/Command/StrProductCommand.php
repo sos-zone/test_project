@@ -40,6 +40,7 @@ class StrProductCommand extends ContainerAwareCommand
             $skipped = 0;
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
+            $productList = [];
 
             $content = fopen($input->getArgument('filePath'), "r");
 
@@ -118,12 +119,17 @@ class StrProductCommand extends ContainerAwareCommand
                     continue;
                 }
 
-                if (! $testMode) {
-                    $em = $this->getContainer()->get('doctrine')->getEntityManager();
-                    $em->persist($product);
-                    $em->flush();
-                }
+                array_push($productList, $product);
+
                 $saved++;
+            }
+
+            if (!$testMode && !empty($productList)) {
+                $em = $this->getContainer()->get('doctrine')->getEntityManager();
+                foreach($productList as $product) {
+                    $em->persist($product);
+                }
+                $em->flush();
             }
 
             $output->writeln('<comment>Action successfully complited!</comment>');

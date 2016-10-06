@@ -45,7 +45,7 @@ class Product
     /**
      * @var float
      *
-     * @ORM\Column(name="strProductCostInGBP", type="float", nullable=false)
+     * @ORM\Column(name="strProductCostInGBP", type="decimal", nullable=false)
      */
     private $costInGBP;
 
