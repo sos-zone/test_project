@@ -12,7 +12,6 @@ class ProductValidator
     const EMPTY_STOCK = 'stock count can\'t be blank';
     const TOO_SMALL_STOCK = 'cost is less than 5 units and (or) Stock count is less than 10';
     const TOO_BIG_STOCK = 'cost is more than 1000 units';
-    const DUPLICATE_CODE = 'product with same code is exist at DB';
 
     const MAX_CODE_LENGTH = 10;
     const MAX_NAME_LENGTH = 50;
@@ -62,6 +61,6 @@ class ProductValidator
      */
     public function isProductExists(Product $product)
     {
-        return $this->productRepository->findByCode($product->getCode());
+        return $this->productRepository->findProductByCode($product);
     }
 }

@@ -3,6 +3,7 @@
 namespace TestBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use TestBundle\Entity\Product;
 
 /**
  * ProdRepository
@@ -12,5 +13,72 @@ use Doctrine\ORM\EntityRepository;
  */
 class ProductRepository extends EntityRepository
 {
+    public function findProductByCode(Product $product)
+    {
+        $em = $this->getEntityManager();
+        $connection = $em->getConnection();
+        $statement = $connection->prepare("SELECT * FROM `tblProductData` WHERE `strProductCode` = :code");
+        $statement->bindValue('code', $product->getCode());
+        $statement->execute();
+        $result = $statement->fetchAll();
 
+        return $result;
+    }
+
+    /**
+     * POST new Product
+     *
+     * @param Product $product
+     * @return array
+     */
+    public function postProduct(Product $product)
+    {
+        $em = $this->getEntityManager();
+        $connection = $em->getConnection();
+        $statement = $connection->prepare("
+            INSERT INTO `tblProductData` (`strProductName`, `strProductDesc`, `dtmDiscontinued`, `strProductStock`, `strProductCost`, `strProductDiscontinued`, `stmTimestamp`, `strProductCode`)
+            VALUES(:name_, :descript, :dtmdiscontinued, :stock, :cost, :discontinued, :timestamp_, :code)
+        ");
+        $statement->bindValue('code', $product->getCode());
+        $statement->bindValue('name_', $product->getName());
+        $statement->bindValue('descript', $product->getDescription());
+        $statement->bindValue('dtmdiscontinued', $product->getDtmdiscontinued());
+        $statement->bindValue('stock', $product->getStock());
+        $statement->bindValue('cost', $product->getCost());
+        $statement->bindValue('discontinued', $product->isDiscontinued() ? 1 : 0);
+        $statement->bindValue('timestamp_', $product->getStmtimestamp()->format('Y-m-d H:i:s'));
+        $statement->execute();
+    }
+
+    /**
+     * Update Product
+     *
+     * @param Product $product
+     * @return array
+     */
+    public function putProduct(Product $product)
+    {
+        $em = $this->getEntityManager();
+        $connection = $em->getConnection();
+        $statement = $connection->prepare("
+            UPDATE `tblProductData`
+            SET `strProductName`= :name_, 
+                `strProductDesc`= :descript, 
+                `dtmDiscontinued`= :dtmdiscontinued, 
+                `strProductStock`= :stock,
+                `strProductCost`= :cost,
+                `strProductDiscontinued`= :discontinued,
+                `stmTimestamp`= :timestamp_
+            WHERE `strProductCode` = :code
+        ");
+        $statement->bindValue('code', $product->getCode());
+        $statement->bindValue('name_', $product->getName());
+        $statement->bindValue('descript', $product->getDescription());
+        $statement->bindValue('dtmdiscontinued', $product->getDtmdiscontinued());
+        $statement->bindValue('stock', $product->getStock());
+        $statement->bindValue('cost', $product->getCost());
+        $statement->bindValue('discontinued', $product->isDiscontinued() ? 1 : 0);
+        $statement->bindValue('timestamp_', $product->getStmtimestamp()->format('Y-m-d H:i:s'));
+        $statement->execute();
+    }
 }

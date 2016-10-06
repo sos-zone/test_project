@@ -41,7 +41,8 @@ class StrProductCommand extends ContainerAwareCommand
             $skipped = 0;
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
-            $productList = [];
+            $newProductsList = [];
+            $updateProductsList = [];
             $returnErr = false;
 
             $file = new \SplFileObject($input->getArgument('filePath'));
@@ -67,25 +68,22 @@ class StrProductCommand extends ContainerAwareCommand
                     $rowNum++;
                     $now = new \DateTime();
 
-                    $isNext = false;
-                    for ($i = 0; $i < 5; $i++) {
-                        /* is $stock contains 5 items*/
-                        if (!isset($stock[$i])) {
-                            $skipped++;
-                            array_push($errList, new ProductError($rowNum, ProductValidator::INVALID_DATA));
-                            $isNext = true;
-                            break;
-                        }
-
-                        /* convert Discontinued into bool */
-                        if (isset($stock[Product::DISCONTINUED]) && 'yes' == $stock[Product::DISCONTINUED]) {
-                            $stock[Product::DISCONTINUED] = true;
-                        } else {
-                            $stock[Product::DISCONTINUED] = false;
-                        }
-                    }
-                    if ($isNext) {
+                    if ('' == $stock[Product::CODE] ||
+                        '' == $stock[Product::NAME] ||
+                        '' == $stock[Product::DESCRIPTION] ||
+                        '' == $stock[Product::STOCK] ||
+                        '' == $stock[Product::COST]
+                        ) {
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
                         continue;
+                    }
+
+                    /* convert Discontinued into bool */
+                    if (isset($stock[Product::DISCONTINUED]) && 'yes' == $stock[Product::DISCONTINUED]) {
+                        $stock[Product::DISCONTINUED] = true;
+                    } else {
+                        $stock[Product::DISCONTINUED] = false;
                     }
 
                     if (
@@ -95,16 +93,6 @@ class StrProductCommand extends ContainerAwareCommand
                     ) {
                         $skipped++;
                         array_push($errList, new ProductError($rowNum, ProductValidator::TOO_LONG_DATA));
-                        continue;
-                    }
-
-                    if ('' == $stock[Product::CODE] ||
-                        '' == $stock[Product::NAME] ||
-                        '' == $stock[Product::DESCRIPTION] ||
-                        '' == $stock[Product::STOCK] ||
-                        '' == $stock[Product::COST]) {
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
                         continue;
                     }
 
@@ -139,28 +127,32 @@ class StrProductCommand extends ContainerAwareCommand
 
                     if ($this->getContainer()->get('product.validator')->isProductExists($product)) {
                         $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::DUPLICATE_CODE));
+                        array_push($updateProductsList, $product);
                         continue;
                     }
 
-                    array_push($productList, $product);
+                    array_push($newProductsList, $product);
 
                     $saved++;
                 }
 
-                if (!$testMode && !empty($productList)) {
-                    $em = $this->getContainer()->get('doctrine')->getEntityManager();
-                    foreach ($productList as $product) {
-                        $em->persist($product);
+                if (!$testMode && !empty($newProductsList)) {
+                    foreach ($newProductsList as $product) {
+                        $this->getContainer()->get('product.repository')->postProduct($product);
                     }
-                    $em->flush();
+                }
+
+                if (!$testMode && !empty($updateProductsList)) {
+                    foreach ($updateProductsList as $product) {
+                        $this->getContainer()->get('product.repository')->putProduct($product);
+                    }
                 }
 
                 $output->writeln('<comment>Action successfully complited!</comment>');
                 $output->writeln('<info>Total stock(s): ' . $rowNum . '</info>');
 
                 if ($testMode) {
-                    $output->writeln('Candidate to add into DB, stock(s): ' . $saved);
+                    $output->writeln('Candidate to add (update) into DB, stock(s): ' . $saved);
                 } else {
                     $output->writeln('Saved stock(s): ' . $saved);
                 }
