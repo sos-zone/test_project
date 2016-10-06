@@ -118,7 +118,7 @@ class StrProductCommand extends ContainerAwareCommand
                     continue;
                 }
 
-                if ($testMode) {
+                if (! $testMode) {
                     $em = $this->getContainer()->get('doctrine')->getEntityManager();
                     $em->persist($product);
                     $em->flush();
@@ -129,7 +129,7 @@ class StrProductCommand extends ContainerAwareCommand
             $output->writeln('<comment>Action successfully complited!</comment>');
             $output->writeln('<info>Total stock(s): '.$rowNum.'</info>');
 
-            if ($testMode) {
+            if (! $testMode) {
                 $output->writeln('Candidate to add into DB, stock(s): '.$saved);
             } else {
                 $output->writeln('Saved stock(s): '.$saved);
