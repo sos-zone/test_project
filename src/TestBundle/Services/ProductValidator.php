@@ -4,14 +4,19 @@ namespace TestBundle\Services;
 
 use TestBundle\Entity\Product;
 
-class ProductErrorManager
+class ProductValidator
 {
-    const INVALID_DATA = 'not correct data';
+    const INVALID_DATA_HEADER = 'not correct CSV data header';
+    const INVALID_DATA = 'not correct product data';
     const TOO_LONG_DATA = 'to long data';
     const EMPTY_STOCK = 'stock count can\'t be blank';
     const TOO_SMALL_STOCK = 'cost is less than 5GBP and (or) Stock count is less than 10';
     const TOO_BIG_STOCK = 'cost is more than 1000GBP';
     const DUPLICATE_CODE = 'product with same code is exist at DB';
+
+    const MAX_CODE_LENGTH = 10;
+    const MAX_NAME_LENGTH = 50;
+    const MAX_DESCRIPTION_LENGTH = 255;
 
     private $productRepository;
 
@@ -21,13 +26,23 @@ class ProductErrorManager
     }
 
     /**
-     * Check for too small stock
+     * Check for too few stocks
      * @param Product $product
      * @return boolean
      */
-    public function isTooSmallStock(Product $product)
+    public function isTooFewStocks(Product $product)
     {
-        return $product->getCostInGBP()<5 && $product->getStock()<10;
+        return $product->getStock()<10;
+    }
+
+    /**
+     * Check for too small cost
+     * @param Product $product
+     * @return boolean
+     */
+    public function isTooSmallCost(Product $product)
+    {
+        return $product->getCostInGBP()<5;
     }
 
     /**

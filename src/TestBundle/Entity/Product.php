@@ -13,6 +13,13 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Product
 {
+    const CODE = 'Product Code';
+    const NAME = 'Product Name';
+    const DESCRIPTION = 'Product Description';
+    const STOCK = 'Stock';
+    const COST_IN_GBP = 'Cost in GBP';
+    const DISCONTINUED = 'Discontinued';
+
     /**
      * @var string
      *

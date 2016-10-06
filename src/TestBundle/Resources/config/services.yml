@@ -6,7 +6,7 @@ services:
     arguments:
       - TestBundle\Entity\Product
 
-  product.error_manager:
-    class: TestBundle\Services\ProductErrorManager
+  product.validator:
+    class: TestBundle\Services\ProductValidator
     arguments:
       - @product.repository

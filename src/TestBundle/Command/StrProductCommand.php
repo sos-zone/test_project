@@ -7,10 +7,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Ddeboer\DataImport\Reader\CsvReader;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Helper\ProductError;
-use TestBundle\Services\ProductErrorManager;
+use TestBundle\Services\ProductValidator;
 
 class StrProductCommand extends ContainerAwareCommand
 {
@@ -41,109 +42,133 @@ class StrProductCommand extends ContainerAwareCommand
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
             $productList = [];
+            $returnErr = false;
 
-            $content = fopen($input->getArgument('filePath'), "r");
+            $file = new \SplFileObject($input->getArgument('filePath'));
+            $reader = new CsvReader($file);
+            $reader->setHeaderRowNumber(0);
 
-            while (($stock = fgetcsv($content)) !== false) {
+            $headers = $reader->getColumnHeaders();
+            if (in_array([Product::CODE], $headers) ||
+                in_array([Product::NAME], $headers) ||
+                in_array([Product::DESCRIPTION], $headers) ||
+                in_array([Product::STOCK], $headers) ||
+                in_array([Product::COST_IN_GBP], $headers)) {
 
-                if ('Product Code' == $stock[0]) {
-                    continue;
-                }
-
-                $rowNum++;
-                $now = new \DateTime();
-
-                $isNext = false;
-                for ($i=0; $i<5; $i++) {
-                    /* is $stock contains 5 items*/
-                    if (!isset($stock[$i])) {
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductErrorManager::INVALID_DATA));
-                        $isNext = true;
-                        break;
-                    }
-
-                    /* convert Discontinued into bool */
-                    if(isset($stock[5]) && 'yes' == $stock[5]) {
-                        $stock[5] = true;
-                    } else {
-                        $stock[5] = false;
-                    }
-                }
-                if ($isNext) {
-                    continue;
-                }
-
-                if (strlen($stock[0])>10 || strlen($stock[1])>50 || strlen($stock[2])>255) {
-                    $skipped++;
-                    array_push($errList, new ProductError($rowNum, ProductErrorManager::TOO_LONG_DATA));
-                    continue;
-                }
-
-                if (''==$stock[3]) {
-                    $skipped++;
-                    array_push($errList, new ProductError($rowNum, ProductErrorManager::EMPTY_STOCK));
-                    continue;
-                }
-
-                $product = new Product;
-                $product
-                    ->setCode($stock[0])
-                    ->setName($stock[1])
-                    ->setDescription($stock[2])
-                    ->setStock($stock[3])
-                    ->setCostInGBP($stock[4])
-                    ->setDiscontinued($stock[5])
-                    ->setStmtimestamp($now)
-                ;
-
-                if ($this->getContainer()->get('product.error_manager')->isTooSmallStock($product)) {
-                    $skipped++;
-                    array_push($errList, new ProductError($rowNum, ProductErrorManager::TOO_SMALL_STOCK));
-                    continue;
-                }
-
-                if ($this->getContainer()->get('product.error_manager')->isTooBigCost($product)) {
-                    $skipped++;
-                    array_push($errList, new ProductError($rowNum, ProductErrorManager::TOO_BIG_STOCK));
-                    continue;
-                }
-
-                if ($product->isDiscontinued()) {
-                    $product->setDtmdiscontinued($now);
-                }
-
-                if ($this->getContainer()->get('product.error_manager')->isProductExists($product)) {
-                    $skipped++;
-                    array_push($errList, new ProductError($rowNum, ProductErrorManager::DUPLICATE_CODE));
-                    continue;
-                }
-
-                array_push($productList, $product);
-
-                $saved++;
+                array_push($errList, new ProductError($rowNum, ProductValidator::INVALID_DATA_HEADER));
+                $returnErr = true;
             }
 
-            if (!$testMode && !empty($productList)) {
-                $em = $this->getContainer()->get('doctrine')->getEntityManager();
-                foreach($productList as $product) {
-                    $em->persist($product);
-                }
-                $em->flush();
-            }
-
-            $output->writeln('<comment>Action successfully complited!</comment>');
-            $output->writeln('<info>Total stock(s): '.$rowNum.'</info>');
-
-            if ($testMode) {
-                $output->writeln('Candidate to add into DB, stock(s): '.$saved);
+            if ($returnErr) {
+                $output->writeln('<error>Invalid data headers! Please, check it.</error>');
             } else {
-                $output->writeln('Saved stock(s): '.$saved);
-            }
+                foreach ($reader as $stock) {
 
-            $output->writeln('Skipped stock(s): '.$skipped);
-            foreach ($errList as $error) {
-                $output->writeln('<fg=red>Line '.$error->getRowNum().': '.$error->getMessage().'</fg=red>');
+                    if ('Product Code' == $stock[Product::CODE]) {
+                        continue;
+                    }
+
+                    $rowNum++;
+                    $now = new \DateTime();
+
+                    $isNext = false;
+                    for ($i = 0; $i < 5; $i++) {
+                        /* is $stock contains 5 items*/
+                        if (!isset($stock[$i])) {
+                            $skipped++;
+                            array_push($errList, new ProductError($rowNum, ProductValidator::INVALID_DATA));
+                            $isNext = true;
+                            break;
+                        }
+
+                        /* convert Discontinued into bool */
+                        if (isset($stock[Product::DISCONTINUED]) && 'yes' == $stock[Product::DISCONTINUED]) {
+                            $stock[Product::DISCONTINUED] = true;
+                        } else {
+                            $stock[Product::DISCONTINUED] = false;
+                        }
+                    }
+                    if ($isNext) {
+                        continue;
+                    }
+
+                    if (
+                        strlen($stock[Product::CODE]) > ProductValidator::MAX_CODE_LENGTH ||
+                        strlen($stock[Product::NAME]) > ProductValidator::MAX_NAME_LENGTH ||
+                        strlen($stock[Product::DESCRIPTION]) > ProductValidator::MAX_CODE_LENGTH
+                    ) {
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_LONG_DATA));
+                        continue;
+                    }
+
+                    if ('' == $stock[3]) {
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
+                        continue;
+                    }
+
+                    $product = new Product;
+                    $product
+                        ->setCode($stock[Product::CODE])
+                        ->setName($stock[Product::NAME])
+                        ->setDescription($stock[Product::DESCRIPTION])
+                        ->setStock($stock[Product::STOCK])
+                        ->setCostInGBP($stock[Product::COST_IN_GBP])
+                        ->setDiscontinued($stock[Product::DISCONTINUED])
+                        ->setStmtimestamp($now);
+
+                    if ($this->getContainer()->get('product.validator')->isTooFewStocks($product) ||
+                        $this->getContainer()->get('product.validator')->isTooSmallCost($product)
+                    ) {
+
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_SMALL_STOCK));
+                        continue;
+                    }
+
+                    if ($this->getContainer()->get('product.validator')->isTooBigCost($product)) {
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_BIG_STOCK));
+                        continue;
+                    }
+
+                    if ($product->isDiscontinued()) {
+                        $product->setDtmdiscontinued($now);
+                    }
+
+                    if ($this->getContainer()->get('product.validator')->isProductExists($product)) {
+                        $skipped++;
+                        array_push($errList, new ProductError($rowNum, ProductValidator::DUPLICATE_CODE));
+                        continue;
+                    }
+
+                    array_push($productList, $product);
+
+                    $saved++;
+                }
+
+                if (!$testMode && !empty($productList)) {
+                    $em = $this->getContainer()->get('doctrine')->getEntityManager();
+                    foreach ($productList as $product) {
+                        $em->persist($product);
+                    }
+                    $em->flush();
+                }
+
+                $output->writeln('<comment>Action successfully complited!</comment>');
+                $output->writeln('<info>Total stock(s): ' . $rowNum . '</info>');
+
+                if ($testMode) {
+                    $output->writeln('Candidate to add into DB, stock(s): ' . $saved);
+                } else {
+                    $output->writeln('Saved stock(s): ' . $saved);
+                }
+
+                $output->writeln('Skipped stock(s): ' . $skipped);
+                foreach ($errList as $error) {
+                    $output->writeln('<fg=red>Line ' . $error->getRowNum() . ': ' . $error->getMessage() . '</fg=red>');
+                }
             }
         }
     }

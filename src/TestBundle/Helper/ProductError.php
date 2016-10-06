@@ -14,7 +14,7 @@ class ProductError
      */
     private $message;
 
-    public function __construct($rowNum, $message)
+    public function __construct($rowNum=0, $message)
     {
         $this->setRowNum($rowNum);
         $this->setMessage($message);
