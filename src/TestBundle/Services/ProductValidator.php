@@ -10,8 +10,8 @@ class ProductValidator
     const INVALID_DATA = 'not correct product data';
     const TOO_LONG_DATA = 'to long data';
     const EMPTY_STOCK = 'stock count can\'t be blank';
-    const TOO_SMALL_STOCK = 'cost is less than 5GBP and (or) Stock count is less than 10';
-    const TOO_BIG_STOCK = 'cost is more than 1000GBP';
+    const TOO_SMALL_STOCK = 'cost is less than 5 units and (or) Stock count is less than 10';
+    const TOO_BIG_STOCK = 'cost is more than 1000 units';
     const DUPLICATE_CODE = 'product with same code is exist at DB';
 
     const MAX_CODE_LENGTH = 10;
@@ -42,7 +42,7 @@ class ProductValidator
      */
     public function isTooSmallCost(Product $product)
     {
-        return $product->getCostInGBP()<5;
+        return $product->getCost()<5;
     }
 
     /**
@@ -52,7 +52,7 @@ class ProductValidator
      */
     public function isTooBigCost(Product $product)
     {
-        return $product->getCostInGBP()>1000;
+        return $product->getCost()>1000;
     }
 
     /**

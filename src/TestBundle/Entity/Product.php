@@ -17,7 +17,7 @@ class Product
     const NAME = 'Product Name';
     const DESCRIPTION = 'Product Description';
     const STOCK = 'Stock';
-    const COST_IN_GBP = 'Cost in GBP';
+    const COST = 'Cost in GBP';
     const DISCONTINUED = 'Discontinued';
 
     /**
@@ -52,9 +52,9 @@ class Product
     /**
      * @var float
      *
-     * @ORM\Column(name="strProductCostInGBP", type="decimal", nullable=false)
+     * @ORM\Column(name="strProductCost", type="decimal", nullable=false)
      */
-    private $costInGBP;
+    private $cost;
 
     /**
      * @var boolean
@@ -188,26 +188,26 @@ class Product
     }
 
     /**
-     * Set costInGBP
+     * Set cost
      *
-     * @param float $costInGBP
+     * @param float $cost
      * @return Product
      */
-    public function setCostInGBP($costInGBP)
+    public function setCost($cost)
     {
-        $this->costInGBP = $costInGBP;
+        $this->cost = $cost;
 
         return $this;
     }
 
     /**
-     * Get costInGBP
+     * Get cost
      *
      * @return float
      */
-    public function getCostInGBP()
+    public function getCost()
     {
-        return $this->costInGBP;
+        return $this->cost;
     }
 
     /**

@@ -53,7 +53,7 @@ class StrProductCommand extends ContainerAwareCommand
                 in_array([Product::NAME], $headers) ||
                 in_array([Product::DESCRIPTION], $headers) ||
                 in_array([Product::STOCK], $headers) ||
-                in_array([Product::COST_IN_GBP], $headers)) {
+                in_array([Product::COST], $headers)) {
 
                 array_push($errList, new ProductError($rowNum, ProductValidator::INVALID_DATA_HEADER));
                 $returnErr = true;
@@ -114,7 +114,7 @@ class StrProductCommand extends ContainerAwareCommand
                         ->setName($stock[Product::NAME])
                         ->setDescription($stock[Product::DESCRIPTION])
                         ->setStock($stock[Product::STOCK])
-                        ->setCostInGBP($stock[Product::COST_IN_GBP])
+                        ->setCost($stock[Product::COST])
                         ->setDiscontinued($stock[Product::DISCONTINUED])
                         ->setStmtimestamp($now);
 
