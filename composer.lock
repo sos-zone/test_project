@@ -4,38 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "690fdd34373372658716fda9720a99fe",
-    "content-hash": "9191dbf80c4e904762020c3fd482f17e",
+    "hash": "285869a038df331618cfcdfb13be4fee",
+    "content-hash": "5a61966a65dae8ee78e70bf5d71f7ed5",
     "packages": [
         {
             "name": "ddeboer/data-import",
-            "version": "0.19.1",
+            "version": "0.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ddeboer/data-import.git",
-                "reference": "9fb9571370a8a0dd57a1c2bd3ef6f8dc00388291"
+                "reference": "cbae2f570192b738c5cec835fbf583a75c52d535"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ddeboer/data-import/zipball/9fb9571370a8a0dd57a1c2bd3ef6f8dc00388291",
-                "reference": "9fb9571370a8a0dd57a1c2bd3ef6f8dc00388291",
+                "url": "https://api.github.com/repos/ddeboer/data-import/zipball/cbae2f570192b738c5cec835fbf583a75c52d535",
+                "reference": "cbae2f570192b738c5cec835fbf583a75c52d535",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0",
+                "php": ">=5.3.0",
                 "psr/log": "~1.0"
             },
             "require-dev": {
-                "doctrine/dbal": "~2.4",
-                "doctrine/orm": "~2.4",
+                "doctrine/dbal": "*",
+                "doctrine/orm": "*",
                 "ext-iconv": "*",
                 "ext-mbstring": "*",
                 "ext-sqlite3": "*",
-                "henrikbjorn/phpspec-code-coverage": "~1.0",
                 "phpoffice/phpexcel": "*",
-                "phpspec/phpspec": "~2.1",
                 "symfony/console": "~2.5.0",
-                "symfony/property-access": "~2.5",
+                "symfony/property-access": "*",
                 "symfony/validator": "~2.3.0"
             },
             "suggest": {
@@ -49,9 +47,8 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Ddeboer\\DataImport\\": "src/",
-                    "Ddeboer\\DataImport\\Tests\\": "tests/"
+                "psr-0": {
+                    "Ddeboer\\DataImport": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -77,7 +74,7 @@
                 "export",
                 "import"
             ],
-            "time": "2016-06-09 14:20:13"
+            "time": "2015-04-21 14:06:20"
         },
         {
             "name": "ddeboer/data-import-bundle",
@@ -3657,6 +3654,80 @@
                 "framework"
             ],
             "time": "2016-10-03 18:44:12"
+        },
+        {
+            "name": "symfony/validator",
+            "version": "v3.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/validator.git",
+                "reference": "98f1e6c3f78222fb83edb87c08d22a91bc975507"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/validator/zipball/98f1e6c3f78222fb83edb87c08d22a91bc975507",
+                "reference": "98f1e6c3f78222fb83edb87c08d22a91bc975507",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "symfony/polyfill-mbstring": "~1.0",
+                "symfony/translation": "~2.8|~3.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "~1.0",
+                "doctrine/cache": "~1.0",
+                "egulias/email-validator": "~1.2,>=1.2.1",
+                "symfony/cache": "~3.1",
+                "symfony/config": "~2.8|~3.0",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/http-foundation": "~2.8|~3.0",
+                "symfony/intl": "~2.8|~3.0",
+                "symfony/yaml": "~2.8|~3.0"
+            },
+            "suggest": {
+                "doctrine/annotations": "For using the annotation mapping. You will also need doctrine/cache.",
+                "doctrine/cache": "For using the default cached annotation reader and metadata cache.",
+                "egulias/email-validator": "Strict (RFC compliant) email validation",
+                "psr/cache-implementation": "For using the metadata cache.",
+                "symfony/config": "",
+                "symfony/expression-language": "For using the Expression validator",
+                "symfony/http-foundation": "",
+                "symfony/intl": "",
+                "symfony/property-access": "For using the Expression validator",
+                "symfony/yaml": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Validator\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Validator Component",
+            "homepage": "https://symfony.com",
+            "time": "2016-10-03 17:30:23"
         },
         {
             "name": "twig/twig",

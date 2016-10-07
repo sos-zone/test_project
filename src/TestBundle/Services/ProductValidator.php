@@ -17,6 +17,10 @@ class ProductValidator
     const MAX_NAME_LENGTH = 50;
     const MAX_DESCRIPTION_LENGTH = 255;
 
+    const MIN_STOCK_COUNT = 10;
+    const MIN_COST = 5;
+    const MAX_COST = 1000;
+
     private $productRepository;
 
     public function __construct($productRepository)
@@ -31,7 +35,7 @@ class ProductValidator
      */
     public function isTooFewStocks(Product $product)
     {
-        return $product->getStock()<10;
+        return $product->getStock() < $this::MIN_STOCK_COUNT;
     }
 
     /**
@@ -41,7 +45,7 @@ class ProductValidator
      */
     public function isTooSmallCost(Product $product)
     {
-        return $product->getCost()<5;
+        return $product->getCost() < $this::MIN_COST;
     }
 
     /**
@@ -51,7 +55,7 @@ class ProductValidator
      */
     public function isTooBigCost(Product $product)
     {
-        return $product->getCost()>1000;
+        return $product->getCost() > $this::MAX_COST;
     }
 
     /**

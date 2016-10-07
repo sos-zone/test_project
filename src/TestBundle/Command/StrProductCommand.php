@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
@@ -45,10 +46,11 @@ class StrProductCommand extends ContainerAwareCommand
             $returnErr = false;
 
             $file = new \SplFileObject($input->getArgument('filePath'));
-            $reader = new CsvReader($file);
-            $reader->setHeaderRowNumber(0);
+            $csvReader = new CsvReader($file);
+            $csvReader->setHeaderRowNumber(0);
 
-            $headers = $reader->getColumnHeaders();
+            $headers = $csvReader->getColumnHeaders();
+
             if (in_array([Product::CODE], $headers) ||
                 in_array([Product::NAME], $headers) ||
                 in_array([Product::DESCRIPTION], $headers) ||
@@ -62,7 +64,7 @@ class StrProductCommand extends ContainerAwareCommand
             if ($returnErr) {
                 $output->writeln('<error>Invalid data headers! Please, check it.</error>');
             } else {
-                foreach ($reader as $stock) {
+                foreach ($csvReader as $stock) {
 
                     $rowNum++;
                     $now = new \DateTime();
@@ -88,7 +90,7 @@ class StrProductCommand extends ContainerAwareCommand
                     if (
                         strlen($stock[Product::CODE]) > ProductValidator::MAX_CODE_LENGTH ||
                         strlen($stock[Product::NAME]) > ProductValidator::MAX_NAME_LENGTH ||
-                        strlen($stock[Product::DESCRIPTION]) > ProductValidator::MAX_CODE_LENGTH
+                        strlen($stock[Product::DESCRIPTION]) > ProductValidator::MAX_DESCRIPTION_LENGTH
                     ) {
                         $skipped++;
                         array_push($errList, new ProductError($rowNum, ProductValidator::TOO_LONG_DATA));
@@ -131,9 +133,9 @@ class StrProductCommand extends ContainerAwareCommand
                     $saved++;
                 }
 
-                if (!$testMode && !empty($productList)) {
+                if (!$testMode && !empty($productsList)) {
                     $em = $this->getContainer()->get('doctrine')->getManager();
-                    foreach ($productList as $product) {
+                    foreach ($productsList as $product) {
                         $em->persist($product);
                     }
                     $em->flush();
