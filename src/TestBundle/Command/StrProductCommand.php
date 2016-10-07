@@ -7,8 +7,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Reader\CsvReader;
+use Ddeboer\DataImport\Filter\CallbackFilter;
+
+use Ddeboer\DataImport\Writer\CallbackWriter;
+
+use Ddeboer\DataImport\Filter\ValidatorFilter;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Helper\ProductError;
@@ -64,74 +72,109 @@ class StrProductCommand extends ContainerAwareCommand
             if ($returnErr) {
                 $output->writeln('<error>Invalid data headers! Please, check it.</error>');
             } else {
-                foreach ($csvReader as $stock) {
 
-                    $rowNum++;
-                    $now = new \DateTime();
+                $workflow = new Workflow($csvReader);
 
-                    if ('' == $stock[Product::CODE] ||
-                        '' == $stock[Product::NAME] ||
-                        '' == $stock[Product::DESCRIPTION] ||
-                        '' == $stock[Product::STOCK] ||
-                        '' == $stock[Product::COST]
-                        ) {
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
-                        continue;
-                    }
+                $validator = $this->getContainer()->get('validator');
+                $filter = new ValidatorFilter($validator);
+                $filter->add('email', new Assert\Email());
+                $filter->add('sku', new Assert\NotBlank());
 
-                    /* convert Discontinued into bool */
-                    if (isset($stock[Product::DISCONTINUED]) && 'yes' == $stock[Product::DISCONTINUED]) {
-                        $stock[Product::DISCONTINUED] = true;
-                    } else {
-                        $stock[Product::DISCONTINUED] = false;
-                    }
 
-                    if (
-                        strlen($stock[Product::CODE]) > ProductValidator::MAX_CODE_LENGTH ||
-                        strlen($stock[Product::NAME]) > ProductValidator::MAX_NAME_LENGTH ||
-                        strlen($stock[Product::DESCRIPTION]) > ProductValidator::MAX_DESCRIPTION_LENGTH
-                    ) {
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_LONG_DATA));
-                        continue;
-                    }
+                $tooSmallCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
 
-                    if (! $product = $this->getContainer()->get('product.validator')->isProductExists($stock[Product::CODE])) {
-                        $product = new Product;
-                        $product->setCode($stock[Product::CODE]);
-                    }
+                $tooFewStockCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
 
-                    $product
-                        ->setName($stock[Product::NAME])
-                        ->setDescription($stock[Product::DESCRIPTION])
-                        ->setStock($stock[Product::STOCK])
-                        ->setCost($stock[Product::COST])
-                        ->setDiscontinued($stock[Product::DISCONTINUED])
-                        ->setStmtimestamp($now);
 
-                    if ($this->getContainer()->get('product.validator')->isTooFewStocks($product) ||
-                        $this->getContainer()->get('product.validator')->isTooSmallCost($product)
-                    ) {
+                $storage = [];
+                $workflow->addWriter(new CallbackWriter(function ($row) use ($storage) {
+                    array_push($storage, $row);
+                }));
 
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_SMALL_STOCK));
-                        continue;
-                    }
+                $results = $workflow->process();
 
-                    if ($this->getContainer()->get('product.validator')->isTooBigCost($product)) {
-                        $skipped++;
-                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_BIG_STOCK));
-                        continue;
-                    }
 
-                    if ($product->isDiscontinued()) {
-                        $product->setDtmdiscontinued($now);
-                    }
-
-                    array_push($productsList, $product);
-                    $saved++;
-                }
+//                foreach ($csvReader as $stock) {
+//
+//                    $rowNum++;
+//                    $now = new \DateTime();
+//
+////                    $validator = $this->getContainer()->get('validator');
+////                    if (
+////                        count($validator->validate($stock[Product::NAME])) >0 ||
+////                        count($validator->validate($stock[Product::CODE])) >0 ||
+////                        count($validator->validate($stock[Product::DESCRIPTION])) >0 ||
+////                        count($validator->validate($stock[Product::STOCK])) >0 ||
+////                        count($validator->validate($stock[Product::COST])) >0
+////                    ) {
+////                        $skipped++;
+////                        array_push($errList, new ProductError($rowNum, ProductValidator::INVALID_DATA));
+////                        continue;
+////                    }
+//
+//                    if ('' == $stock[Product::CODE] ||
+//                        '' == $stock[Product::NAME] ||
+//                        '' == $stock[Product::DESCRIPTION] ||
+//                        '' == $stock[Product::STOCK] ||
+//                        '' == $stock[Product::COST]
+//                        ) {
+//                        $skipped++;
+//                        array_push($errList, new ProductError($rowNum, ProductValidator::EMPTY_STOCK));
+//                        continue;
+//                    }
+//
+//                    /* convert Discontinued into bool */
+//                    if (isset($stock[Product::DISCONTINUED]) && 'yes' == $stock[Product::DISCONTINUED]) {
+//                        $stock[Product::DISCONTINUED] = true;
+//                    } else {
+//                        $stock[Product::DISCONTINUED] = false;
+//                    }
+//
+//                    if (
+//                        strlen($stock[Product::CODE]) > ProductValidator::MAX_CODE_LENGTH ||
+//                        strlen($stock[Product::NAME]) > ProductValidator::MAX_NAME_LENGTH ||
+//                        strlen($stock[Product::DESCRIPTION]) > ProductValidator::MAX_DESCRIPTION_LENGTH
+//                    ) {
+//                        $skipped++;
+//                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_LONG_DATA));
+//                        continue;
+//                    }
+//
+//                    if (! $product = $this->getContainer()->get('product.validator')->isProductExists($stock[Product::CODE])) {
+//                        $product = new Product;
+//                        $product->setCode($stock[Product::CODE]);
+//                    }
+//
+//                    $product
+//                        ->setName($stock[Product::NAME])
+//                        ->setDescription($stock[Product::DESCRIPTION])
+//                        ->setStock($stock[Product::STOCK])
+//                        ->setCost($stock[Product::COST])
+//                        ->setDiscontinued($stock[Product::DISCONTINUED])
+//                        ->setStmtimestamp($now);
+//
+//                    if ($this->getContainer()->get('product.validator')->isTooFewStocks($product) ||
+//                        $this->getContainer()->get('product.validator')->isTooSmallCost($product)
+//                    ) {
+//
+//                        $skipped++;
+//                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_SMALL_STOCK));
+//                        continue;
+//                    }
+//
+//                    if ($this->getContainer()->get('product.validator')->isTooBigCost($product)) {
+//                        $skipped++;
+//                        array_push($errList, new ProductError($rowNum, ProductValidator::TOO_BIG_STOCK));
+//                        continue;
+//                    }
+//
+//                    if ($product->isDiscontinued()) {
+//                        $product->setDtmdiscontinued($now);
+//                    }
+//
+//                    array_push($productsList, $product);
+//                    $saved++;
+//                }
 
                 if (!$testMode && !empty($productsList)) {
                     $em = $this->getContainer()->get('doctrine')->getManager();

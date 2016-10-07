@@ -3,6 +3,8 @@
 namespace TestBundle\Services;
 
 use TestBundle\Entity\Product;
+use Ddeboer\DataImport\Workflow;
+use Ddeboer\DataImport\Filter\CallbackFilter;
 
 class ProductValidator
 {
@@ -29,23 +31,37 @@ class ProductValidator
     }
 
     /**
-     * Check for too few stocks
-     * @param Product $product
-     * @return boolean
+     * Get tooFewStocksCount
+     * @param Workflow $workflow
+     * @return integer
      */
-    public function isTooFewStocks(Product $product)
+    public function getTooFewStocksCount(Workflow $workflow)
     {
-        return $product->getStock() < $this::MIN_STOCK_COUNT;
+        $tooFewStocksFilter = new CallbackFilter(function ($product) {
+            return $product[Product::STOCK] < $this::MIN_STOCK_COUNT;
+        });
+
+        $workflow->addFilter($tooFewStocksFilter);
+        $result = $workflow->process();
+
+        return $result->getSuccessCount();
     }
 
     /**
-     * Check for too small cost
-     * @param Product $product
-     * @return boolean
+     * Get tooSmallCostCount
+     * @param Workflow $workflow
+     * @return integer
      */
-    public function isTooSmallCost(Product $product)
+    public function getTooSmallCostCount(Workflow $workflow)
     {
-        return $product->getCost() < $this::MIN_COST;
+        $tooSmallCostFilter = new CallbackFilter(function ($product) {
+            return $product[Product::COST] < $this::MIN_COST;
+        });
+
+        $workflow->addFilter($tooSmallCostFilter);
+        $result = $workflow->process();
+
+        return $result->getSuccessCount();
     }
 
     /**

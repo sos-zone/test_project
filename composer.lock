@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "285869a038df331618cfcdfb13be4fee",
-    "content-hash": "5a61966a65dae8ee78e70bf5d71f7ed5",
+    "hash": "597cd3b4a73f0d6f3a839b677a3b54c7",
+    "content-hash": "d4d2d44e23b1014a2a9a3873716293ba",
     "packages": [
         {
             "name": "ddeboer/data-import",
