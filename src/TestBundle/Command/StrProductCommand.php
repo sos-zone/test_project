@@ -10,12 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Workflow\StepAggregator;
 
-use TestBundle\Helper\TooFewStocksCountProduct;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Ddeboer\DataImport\Step\FilterStep;
-use Ddeboer\DataImport\Writer\CallbackWriter;
-use Symfony\Component\Validator\Validator;
-
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Helper\ProductError;
@@ -78,33 +74,34 @@ class StrProductCommand extends ContainerAwareCommand
 
                 $validatorFilter = new \Ddeboer\DataImport\Filter\ValidatorFilter($validator);
 
-                $validatorFilter
-                    ->add('Stock', new Assert\NotNull())
-//                    ->add(Product::NAME, new Assert\NotBlank())
-//                    ->add(Product::DESCRIPTION, new Assert\NotBlank())
-//                    ->add(Product::STOCK, new Assert\NotBlank())
-//                    ->add(Product::COST, new Assert\NotBlank())
-                ;
-//
-//                $validatorFilter
-//                    ->add('Product Code', new Assert\NotNull())
-//                    ->add(Product::NAME, new Assert\NotNull())
-//                    ->add(Product::DESCRIPTION, new Assert\NotNull())
-//                    ->add(Product::STOCK, new Assert\NotNull())
-//                    ->add(Product::COST, new Assert\NotNull())
-//                ;
+                $validatorFilter->throwExceptions(true);
+                $validatorFilter->setStrict(false);
+
+                $validatorFilter->add(Product::CODE, new Assert\NotBlank());
+                $validatorFilter->add(Product::NAME, new Assert\NotBlank());
+                $validatorFilter->add(Product::DESCRIPTION, new Assert\NotBlank());
+                $validatorFilter->add(Product::STOCK, new Assert\NotBlank());
+                $validatorFilter->add(Product::COST, new Assert\NotBlank());
+
+                $validatorFilter->add(Product::CODE, new Assert\NotNull());
+                $validatorFilter->add(Product::NAME, new Assert\NotNull());
+                $validatorFilter->add(Product::DESCRIPTION, new Assert\NotNull());
+                $validatorFilter->add(Product::STOCK, new Assert\NotNull());
+                $validatorFilter->add(Product::COST, new Assert\NotNull());
+
+                $validatorFilter->add(Product::STOCK, new Assert\LessThan(ProductValidator::MIN_STOCK_COUNT));
+
+                $validatorFilter->add(Product::COST, new Assert\LessThan(ProductValidator::MIN_COST));
+
+                $validatorFilter->add(Product::COST, new Assert\GreaterThan(ProductValidator::MAX_COST));
 
                 $filterStep = (new FilterStep())
                     ->add($validatorFilter);
 
-//                $tooSmallCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
-//                $tooFewStockCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
-
                 $result = $workflow
+                    ->setSkipItemOnFailure(true)
                     ->addStep($filterStep)
                     ->process();
-
-//                $err = $result->getSuccessCount();
 
                 $a = 1;
 

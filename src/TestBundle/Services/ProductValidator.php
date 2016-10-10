@@ -31,50 +31,6 @@ class ProductValidator
     }
 
     /**
-     * Get tooFewStocksCount
-     * @param Workflow $workflow
-     * @return integer
-     */
-    public function getTooFewStocksCount(Workflow $workflow)
-    {
-        $tooFewStocksFilter = new CallbackFilter(function ($product) {
-            return $product[Product::STOCK] < $this::MIN_STOCK_COUNT;
-        });
-
-        $workflow->addFilter($tooFewStocksFilter);
-        $result = $workflow->process();
-
-        return $result->getSuccessCount();
-    }
-
-    /**
-     * Get tooSmallCostCount
-     * @param Workflow $workflow
-     * @return integer
-     */
-    public function getTooSmallCostCount(Workflow $workflow)
-    {
-        $tooSmallCostFilter = new CallbackFilter(function ($product) {
-            return $product[Product::COST] < $this::MIN_COST;
-        });
-
-        $workflow->addFilter($tooSmallCostFilter);
-        $result = $workflow->process();
-
-        return $result->getSuccessCount();
-    }
-
-    /**
-     * Check for too big cost
-     * @param Product $product
-     * @return boolean
-     */
-    public function isTooBigCost(Product $product)
-    {
-        return $product->getCost() > $this::MAX_COST;
-    }
-
-    /**
      * Check is product already exists
      * @param string $code
      * @return boolean
