@@ -7,16 +7,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Ddeboer\DataImport\Workflow\StepAggregator;
 
-use Ddeboer\DataImport\Workflow;
+use TestBundle\Helper\TooFewStocksCountProduct;
 use Ddeboer\DataImport\Reader\CsvReader;
-use Ddeboer\DataImport\Filter\CallbackFilter;
-
+use Ddeboer\DataImport\Step\FilterStep;
 use Ddeboer\DataImport\Writer\CallbackWriter;
+use Symfony\Component\Validator\Validator;
 
-use Ddeboer\DataImport\Filter\ValidatorFilter;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Helper\ProductError;
@@ -57,6 +56,8 @@ class StrProductCommand extends ContainerAwareCommand
             $csvReader = new CsvReader($file);
             $csvReader->setHeaderRowNumber(0);
 
+            $workflow = new StepAggregator($csvReader);
+
             $headers = $csvReader->getColumnHeaders();
 
             if (in_array([Product::CODE], $headers) ||
@@ -73,25 +74,46 @@ class StrProductCommand extends ContainerAwareCommand
                 $output->writeln('<error>Invalid data headers! Please, check it.</error>');
             } else {
 
-                $workflow = new Workflow($csvReader);
-
                 $validator = $this->getContainer()->get('validator');
-                $filter = new ValidatorFilter($validator);
-                $filter->add('email', new Assert\Email());
-                $filter->add('sku', new Assert\NotBlank());
 
+                $validatorFilter = new \Ddeboer\DataImport\Filter\ValidatorFilter($validator);
 
-                $tooSmallCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
+                $validatorFilter
+                    ->add('Stock', new Assert\NotNull())
+//                    ->add(Product::NAME, new Assert\NotBlank())
+//                    ->add(Product::DESCRIPTION, new Assert\NotBlank())
+//                    ->add(Product::STOCK, new Assert\NotBlank())
+//                    ->add(Product::COST, new Assert\NotBlank())
+                ;
+//
+//                $validatorFilter
+//                    ->add('Product Code', new Assert\NotNull())
+//                    ->add(Product::NAME, new Assert\NotNull())
+//                    ->add(Product::DESCRIPTION, new Assert\NotNull())
+//                    ->add(Product::STOCK, new Assert\NotNull())
+//                    ->add(Product::COST, new Assert\NotNull())
+//                ;
 
-                $tooFewStockCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
+                $filterStep = (new FilterStep())
+                    ->add($validatorFilter);
 
+//                $tooSmallCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
+//                $tooFewStockCost = $this->getContainer()->get('product.validator')->getTooFewStocksCount($workflow);
 
-                $storage = [];
-                $workflow->addWriter(new CallbackWriter(function ($row) use ($storage) {
-                    array_push($storage, $row);
-                }));
+                $result = $workflow
+                    ->addStep($filterStep)
+                    ->process();
 
-                $results = $workflow->process();
+//                $err = $result->getSuccessCount();
+
+                $a = 1;
+
+//                $storage = [];
+//                $workflow->addWriter(new CallbackWriter(function ($row) use ($storage) {
+//                    array_push($storage, $row);
+//                }));
+//
+//                $results = $workflow->process();
 
 
 //                foreach ($csvReader as $stock) {
@@ -178,6 +200,7 @@ class StrProductCommand extends ContainerAwareCommand
 
                 if (!$testMode && !empty($productsList)) {
                     $em = $this->getContainer()->get('doctrine')->getManager();
+                    /** @var Product $product */
                     foreach ($productsList as $product) {
                         $em->persist($product);
                     }
