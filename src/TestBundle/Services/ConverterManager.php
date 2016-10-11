@@ -3,37 +3,31 @@
 namespace TestBundle\Services;
 
 use Ddeboer\DataImport\ValueConverter\MappingValueConverter;
-use Ddeboer\DataImport\ValueConverter\ArrayValueConverterMap;
+use TestBundle\Services\ArrayValueConverterMap;
 use Ddeboer\DataImport\Workflow;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use Ddeboer\DataImport\Step\ConverterStep;
+use Ddeboer\DataImport\Step\MappingStep;
 
 class ConverterManager
 {
     public function setMappingValueConverter(Workflow $workflow)
     {
-        $converter = new MappingValueConverter([
-            'strProductCode' => Product::CODE,
-            'strProductName' => Product::NAME,
-            'strProductDesc' => Product::DESCRIPTION,
-            'strProductStock' => Product::STOCK,
-            'strProductCost' => Product::COST,
-            'strProductDiscontinued' => Product::DISCONTINUED,
-        ]);
-
-//        call_user_func($converter, 'strProductCode');
-//        call_user_func($converter, 'strProductName');
-//        call_user_func($converter, 'strProductDesc');
-//        call_user_func($converter, 'strProductStock');
-//        call_user_func($converter, 'strProductCost');
-//        call_user_func($converter, 'strProductDiscontinued');
-
-        $converterStep = (new ConverterStep())
-            ->add($converter);
+        $codeMappingStep = (new MappingStep())->map(Product::CODE, 'strProductCode');
+        $nameMappingStep = (new MappingStep())->map(Product::NAME, 'strProductName');
+        $descMappingStep = (new MappingStep())->map(Product::DESCRIPTION, 'strProductDesc');
+        $stockMappingStep = (new MappingStep())->map(Product::STOCK, 'strProductStock');
+        $costMappingStep = (new MappingStep())->map(Product::COST, 'strProductCost');
+        $discontinuedMappingStep = (new MappingStep())->map(Product::DISCONTINUED, 'strProductDiscontinued');
 
         /** @var Workflow $workflow */
-        $workflow->addStep($converterStep);
+        $workflow->addStep($codeMappingStep);
+        $workflow->addStep($nameMappingStep);
+        $workflow->addStep($descMappingStep);
+        $workflow->addStep($stockMappingStep);
+        $workflow->addStep($costMappingStep);
+        $workflow->addStep($discontinuedMappingStep);
 
 
         return $workflow;
@@ -44,11 +38,11 @@ class ConverterManager
         $converter = new ArrayValueConverterMap([
             Product::DISCONTINUED => [function ($input) {
                 if ('' == $input) {
-                    return 'false';
+                    return "0";
                 } else if ('yes' == $input || 'true' == $input) {
-                    return str_replace($input, 'true', $input);
+                    return str_replace($input, "1", $input);
                 } else {
-                    return str_replace($input, 'false', $input);
+                    return str_replace($input, "0", $input);
                 }
             }]
         ]);
@@ -66,7 +60,7 @@ class ConverterManager
     public function setDiscontinuedProductDateConverter(Workflow $workflow, $now)
     {
         $converter = new ArrayValueConverterMap([
-            Product::DISCONTINUED => function ($input) {
+            Product::DISCONTINUED => [function ($input) {
                 if ('' == $input) {
                     return 'false';
                 } else if ('yes' == $input | 'true' == $input) {
@@ -74,7 +68,7 @@ class ConverterManager
                 } else {
                     return str_replace($input, 'false', $input);
                 }
-            }
+            }]
         ]);
 
         $converterStep = (new ConverterStep())

@@ -20,6 +20,7 @@ class WriterManager
     {
         if (! $testMode) {
             $doctrineWriter = new DoctrineWriter($this->em, 'TestBundle:Product');
+            $doctrineWriter->disableTruncate();
             $workflow->addWriter($doctrineWriter);
         }
 
