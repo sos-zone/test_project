@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Symfony\Component\Validator\Constraints\DateTime;
@@ -37,12 +38,9 @@ class StrProductCommand extends ContainerAwareCommand
         if (!is_file($input->getArgument('filePath'))) {
             $output->writeln('<error>File not found! Please, check path.</error>');
         } else {
-            $rowNum = 0;
-            $saved = 0;
-            $skipped = 0;
+            $now = new \DateTime();
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
-            $productsList = [];
             $returnErr = false;
 
             $file = new \SplFileObject($input->getArgument('filePath'));
@@ -72,8 +70,14 @@ class StrProductCommand extends ContainerAwareCommand
                     Product::COST,
                 ];
 
+                $workflow = $this->getContainer()->get('workflow.manager')->getWorkflowInstance($csvReader);
+                if (is_null($workflow)) {
+                    throw new Exception('Runtime error');
+                }
+
+                /*  Get errors row instancies  */
                 if (is_array($fieldBlankResult = $this->getContainer()->get('product.validator')
-                    ->getBlankFieldsError($csvReader, $productFields))) {
+                    ->getBlankFieldsErrors($workflow, $productFields))) {
                     if (count($errList)>0) {
                         $errList = array_merge($errList, $fieldBlankResult);
                     } else {
@@ -82,7 +86,7 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 if (is_array($tooSmallProducts = $this->getContainer()->get('product.validator')
-                    ->getTooSmallProductsError($csvReader, $productFields))) {
+                    ->getTooSmallProductsError($workflow, $productFields))) {
                     if (count($errList)>0) {
                         $errList = array_merge($errList, $tooSmallProducts);
                     } else {
@@ -91,7 +95,7 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 if (is_array($tooBigCostProducts = $this->getContainer()->get('product.validator')
-                    ->getTooBigCostProductsError($csvReader, $productFields))) {
+                    ->getTooBigCostProductsError($workflow, $productFields))) {
                     if (count($errList)>0) {
                         $errList = array_merge($errList, $tooBigCostProducts);
                     } else {
@@ -99,74 +103,24 @@ class StrProductCommand extends ContainerAwareCommand
                     }
                 }
 
-//                $rowNum = $result->getTotalProcessedCount();
-//                $saved = $result->getSuccessCount();
-//                $skipped = $result->getErrorCount();
+                $workflow = $this->getContainer()->get('product.validator')->setCorrectProductFilters($workflow, $productFields);
+//                $workflow = $this->getContainer()->get('converter.manager')->setMappingValueConverter($workflow);
+                $workflow = $this->getContainer()->get('converter.manager')->setProductDiscontinuedConverter($workflow);
+//                $workflow = $this->getContainer()->get('converter.manager')->setDiscontinuedProductDateConverter($workflow, $now);
+//                $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
+                $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
 
-//                $storage = [];
-//                $workflow->addWriter(new CallbackWriter(function ($row) use ($storage) {
-//                    array_push($storage, $row);
-//                }));
-//
-//                $results = $workflow->process();
-
-
-                if (is_array($correctProducts = $this->getContainer()->get('product.validator')
-                    ->getCorrectProducts($csvReader, $productFields))) {
-
-                    foreach ($correctProducts as $csvProduct) {
-
-                        $now = new \DateTime();
-
-                        if (! $product = $this->getContainer()->get('product.validator')->isProductExists($csvProduct[Product::CODE])) {
-                            $product = new Product;
-                            $product->setCode($csvProduct[Product::CODE]);
-                        }
-
-                        /* convert Discontinued into bool */
-                        if (isset($csvProduct[Product::DISCONTINUED]) && 'yes' == $csvProduct[Product::DISCONTINUED]) {
-                            $csvProduct[Product::DISCONTINUED] = true;
-                        } else {
-                            $csvProduct[Product::DISCONTINUED] = false;
-                        }
-
-                        $product
-                            ->setName($csvProduct[Product::NAME])
-                            ->setDescription($csvProduct[Product::DESCRIPTION])
-                            ->setStock($csvProduct[Product::STOCK])
-                            ->setCost($csvProduct[Product::COST])
-                            ->setDiscontinued($csvProduct[Product::DISCONTINUED])
-                            ->setStmtimestamp($now);
-
-
-                        if ($product->isDiscontinued()) {
-                            $product->setDtmdiscontinued($now);
-                        }
-
-                        array_push($productsList, $product);
-                        $saved++;
-                    }
-                }
-
-                if (!$testMode && !empty($productsList)) {
-                    $em = $this->getContainer()->get('doctrine')->getManager();
-                    /** @var Product $product */
-                    foreach ($productsList as $product) {
-                        $em->persist($product);
-                    }
-                    $em->flush();
-                }
 
                 $output->writeln('<comment>Action successfully complited!</comment>');
-                $output->writeln('<info>Total stock(s): ' . $rowNum . '</info>');
+                $output->writeln('<info>Total stock(s): ' . $result->getTotalProcessedCount() . '</info>');
 
                 if ($testMode) {
-                    $output->writeln('Candidate to add (update) into DB, stock(s): ' . $saved);
+                    $output->writeln('Candidate to add (update) into DB, stock(s): ' . $result->getSuccessCount());
                 } else {
-                    $output->writeln('Saved (updated) stock(s): ' . $saved);
+                    $output->writeln('Saved (updated) stock(s): ' . $result->getSuccessCount());
                 }
 
-                $output->writeln('Skipped stock(s): ' . $skipped);
+                $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
                 foreach ($errList as $error) {
                     $output->writeln('<fg=red>Line ' . $error->getRowNum() . ': ' . $error->getMessage() . '</fg=red>');
                 }

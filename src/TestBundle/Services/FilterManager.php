@@ -93,6 +93,16 @@ class FilterManager
     }
 
     /**
+     * get Product
+     *
+     * @return mixed
+     */
+    public function getProductFilter($code)
+    {
+        return $this->getFilter(Product::CODE, new Assert\IdenticalTo($code));
+    }
+
+    /**
      * get filter
      *
      * @param string $fieldName

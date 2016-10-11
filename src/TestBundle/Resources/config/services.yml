@@ -13,7 +13,20 @@ services:
       - @filter.manager
       - @doctrine.orm.default_entity_manager
 
+  workflow.manager:
+    class: TestBundle\Services\WorkflowManager
+    arguments:
+      - @validator
+
   filter.manager:
     class: TestBundle\Services\FilterManager
     arguments:
       - @validator
+
+  converter.manager:
+    class: TestBundle\Services\ConverterManager
+
+  writer.manager:
+    class: TestBundle\Services\WriterManager
+    arguments:
+      - @doctrine.orm.default_entity_manager

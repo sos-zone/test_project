@@ -57,12 +57,12 @@ class ProductValidator
     /**
      * Check is product have blank fields
      *
-     * @param CsvReader $csvReader
+     * @param Workflow $workflow
      * @param $productFields
      *
      * @return mixed
      */
-    public function getBlankFieldsError(CsvReader $csvReader, $productFields)
+    public function getBlankFieldsErrors(Workflow $workflow, $productFields)
     {
         $errBlankType = [];
 
@@ -72,10 +72,8 @@ class ProductValidator
                 /** @var FilterManager $this->filterManager */
                 ->add($this->filterManager->getBlankFieldFilters($fieldName));
 
-            $workflow = new StepAggregator($csvReader);
-
+            /** @var Workflow $workflow */
             $result = $workflow
-                ->setSkipItemOnFailure(true)
                 ->addStep($filterStep)
                 ->process();
 
@@ -99,14 +97,13 @@ class ProductValidator
     /**
      * get too small Product Errors
      *
-     * @param CsvReader $csvReader
+     * @param Workflow $workflow
      * @param $productFields
      *
      * @return mixed
      */
-    public function getTooSmallProductsError(CsvReader $csvReader, $productFields)
+    public function getTooSmallProductsError(Workflow $workflow, $productFields)
     {
-        $workflow = new StepAggregator($csvReader);
         $tooSmallProducts = [];
 
         $filterStep = (new FilterStep())
@@ -114,9 +111,8 @@ class ProductValidator
             ->add($this->filterManager->getMinStockCountFilter())
             ->add($this->filterManager->getMinCostFilter());
 
-
+        /** @var Workflow $workflow */
         $result = $workflow
-            ->setSkipItemOnFailure(true)
             ->addStep($filterStep)
             ->process();
 
@@ -137,23 +133,21 @@ class ProductValidator
     /**
      * get Too Big Cost Product Errors
      *
-     * @param CsvReader $csvReader
+     * @param Workflow $workflow
      * @param $productFields
      *
      * @return mixed
      */
-    public function getTooBigCostProductsError(CsvReader $csvReader, $productFields)
+    public function getTooBigCostProductsError(Workflow $workflow, $productFields)
     {
-        $workflow = new StepAggregator($csvReader);
         $tooSmallProducts = [];
 
         $filterStep = (new FilterStep())
             /** @var FilterManager $this->filterManager */
             ->add($this->filterManager->getMinStockCountFilter());
 
-
+        /** @var Workflow $workflow */
         $result = $workflow
-            ->setSkipItemOnFailure(true)
             ->addStep($filterStep)
             ->process();
 
@@ -172,18 +166,15 @@ class ProductValidator
     }
 
     /**
-     * get Correct Products
+     * set Correct Product filters
      *
-     * @param CsvReader $csvReader
+     * @param Workflow $workflow
      * @param $productFields
      *
      * @return mixed
      */
-    public function getCorrectProducts(CsvReader $csvReader, Array $productFields)
+    public function setCorrectProductFilters(Workflow $workflow, Array $productFields)
     {
-        $workflow = new StepAggregator($csvReader);
-        $correctProducts = [];
-
         $filterStep = (new FilterStep())
             /** @var FilterManager $this->filterManager */
             ->add($this->filterManager->getProductCodeFilter())
@@ -198,11 +189,7 @@ class ProductValidator
             $filterStep->add($this->filterManager->getBlankFieldFilters($fieldName));
         }
 
-        $result = $workflow
-            ->setSkipItemOnFailure(true)
-            ->addStep($filterStep)
-            ->process();
-
-        return 0 == count($correctProducts) ? null : $correctProducts;
+        return $workflow
+            ->addStep($filterStep);
     }
 }
