@@ -24,9 +24,9 @@ class Product
      * @var string
      *
      * @ORM\Column(name="strProductName", type="string", length=50, nullable=false)
-     * @JMS\SerializedName("name")
+     * @ JMS\SerializedName("name")
      */
-    private $name;
+    private $strProductName;
 
     /**
      * @var string
@@ -98,12 +98,12 @@ class Product
     /**
      * Set name
      *
-     * @param string $name
+     * @param string $strProductName
      * @return Product
      */
-    public function setName($name)
+    public function setStrProductName($strProductName)
     {
-        $this->name = $name;
+        $this->strProductName = $strProductName;
 
         return $this;
     }
@@ -113,9 +113,9 @@ class Product
      *
      * @return string 
      */
-    public function getName()
+    public function getStrProductName()
     {
-        return $this->name;
+        return $this->strProductName;
     }
 
     /**
