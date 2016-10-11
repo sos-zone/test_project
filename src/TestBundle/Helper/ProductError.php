@@ -7,33 +7,55 @@ class ProductError
     /**
      * @var integer
      */
-    private $rowNum;
+    private $errCount;
+
+    /**
+     * @var string
+     */
+    private $fieldName;
 
     /**
      * @var string
      */
     private $message;
 
-    public function __construct($rowNum=0, $message)
+    public function __construct($errCount, $message, $fieldName = 'undefined')
     {
-        $this->setRowNum($rowNum);
+        $this->setErrCount($errCount);
+        $this->setFieldName($fieldName);
         $this->setMessage($message);
     }
 
     /**
      * @return int
      */
-    public function getRowNum()
+    public function getErrCount()
     {
-        return $this->rowNum;
+        return $this->errCount;
     }
 
     /**
-     * @param int $rowNum
+     * @param int $errCount
      */
-    public function setRowNum($rowNum)
+    public function setErrCount($errCount)
     {
-        $this->rowNum = $rowNum;
+        $this->errCount = $errCount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldName()
+    {
+        return $this->fieldName;
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName($fieldName)
+    {
+        $this->fieldName = $fieldName;
     }
 
     /**

@@ -10,3 +10,10 @@ services:
     class: TestBundle\Services\ProductValidator
     arguments:
       - @product.repository
+      - @filter.manager
+      - @doctrine.orm.default_entity_manager
+
+  filter.manager:
+    class: TestBundle\Services\FilterManager
+    arguments:
+      - @validator
