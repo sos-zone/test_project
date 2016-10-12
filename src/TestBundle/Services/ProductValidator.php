@@ -50,7 +50,7 @@ class ProductValidator
      */
     public function setCorrectProductFilters(Workflow $workflow, Array $productFields = Product::PRODUCT_DB_FIELDS)
     {
-        $filterStep = (new FilterStep())->add($this->filterManager->getMinStockCountFilter());
+        $filterStep = (new FilterStep())->add($this->filterManager->getMaxCostFilter());
         /** @var FilterManager $this->filterManager */
         $workflow->addStep($filterStep);
 
