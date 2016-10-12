@@ -12,11 +12,11 @@ class ConverterManager
 {
     public function setMappingValueConverter(Workflow $workflow)
     {
-        $codeMappingStep = (new MappingStep())->map('['.Product::CODE.']', '[strProductCode]');
-        $nameMappingStep = (new MappingStep())->map('['.Product::NAME.']', '[strProductName]');
-        $descMappingStep = (new MappingStep())->map('['.Product::DESCRIPTION.']', '[strProductDesc]');
-        $stockMappingStep = (new MappingStep())->map('['.Product::STOCK.']', '[strProductStock]');
-        $costMappingStep = (new MappingStep())->map('['.Product::COST.']', '[strProductCost]');
+        $codeMappingStep = (new MappingStep())->map('['.Product::CODE.']', '['.Product::PRODUCT_DB_FIELDS['CODE'].']');
+        $nameMappingStep = (new MappingStep())->map('['.Product::NAME.']', '['.Product::PRODUCT_DB_FIELDS['NAME'].']');
+        $descMappingStep = (new MappingStep())->map('['.Product::DESCRIPTION.']', '['.Product::PRODUCT_DB_FIELDS['DESCRIPTION'].']');
+        $stockMappingStep = (new MappingStep())->map('['.Product::STOCK.']', '['.Product::PRODUCT_DB_FIELDS['STOCK'].']');
+        $costMappingStep = (new MappingStep())->map('['.Product::COST.']', '['.Product::PRODUCT_DB_FIELDS['COST'].']');
         $discontinuedMappingStep = (new MappingStep())->map('['.Product::DISCONTINUED.']', '[strProductDiscontinued]');
 
         /** @var Workflow $workflow */

@@ -4,6 +4,7 @@ namespace TestBundle\Services;
 
 use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Writer\DoctrineWriter;
+use TestBundle\Entity\Product;
 
 class WriterManager
 {
@@ -17,7 +18,7 @@ class WriterManager
     public function setDoctrineWriter(Workflow $workflow, $testMode = true)
     {
         if (! $testMode) {
-            $doctrineWriter = new DoctrineWriter($this->em, 'TestBundle:Product', 'strProductCode');
+            $doctrineWriter = new DoctrineWriter($this->em, 'TestBundle:Product', Product::PRODUCT_DB_FIELDS['CODE']);
             $doctrineWriter->disableTruncate();
             $workflow->addWriter($doctrineWriter);
         }

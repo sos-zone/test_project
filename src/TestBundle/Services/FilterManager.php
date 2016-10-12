@@ -33,7 +33,7 @@ class FilterManager
      */
     public function getMinStockCountFilter()
     {
-        return $this->getFilter('strProductStock', new Assert\GreaterThan(ProductValidator::MIN_STOCK_COUNT));
+        return $this->getFilter(Product::PRODUCT_DB_FIELDS['STOCK'], new Assert\GreaterThan(ProductValidator::MIN_STOCK_COUNT));
     }
 
     /**
@@ -43,7 +43,7 @@ class FilterManager
      */
     public function getMinCostFilter()
     {
-        return $this->getFilter('strProductCost', new Assert\GreaterThan(ProductValidator::MIN_COST));
+        return $this->getFilter(Product::PRODUCT_DB_FIELDS['COST'], new Assert\GreaterThan(ProductValidator::MIN_COST));
     }
 
     /**
@@ -53,7 +53,7 @@ class FilterManager
      */
     public function getMaxCostFilter()
     {
-        return $this->getFilter('strProductCost', new Assert\LessThan(ProductValidator::MAX_COST));
+        return $this->getFilter(Product::PRODUCT_DB_FIELDS['COST'], new Assert\LessThan(ProductValidator::MAX_COST));
     }
 
     /**

@@ -59,7 +59,7 @@ class ProductValidator
      *
      * @return mixed
      */
-    public function getBlankFieldsErrors(Workflow $workflow, $productFields)
+    public function getBlankFieldsErrors(Workflow $workflow, Array $productFields = Product::PRODUCT_DB_FIELDS)
     {
         $errBlankType = [];
 
@@ -95,11 +95,10 @@ class ProductValidator
      * get too small Product Errors
      *
      * @param Workflow $workflow
-     * @param $productFields
      *
      * @return mixed
      */
-    public function getTooSmallProductsError(Workflow $workflow, $productFields)
+    public function getTooSmallProductsError(Workflow $workflow)
     {
         $tooSmallProducts = [];
 
@@ -131,11 +130,10 @@ class ProductValidator
      * get Too Big Cost Product Errors
      *
      * @param Workflow $workflow
-     * @param $productFields
      *
      * @return mixed
      */
-    public function getTooBigCostProductsError(Workflow $workflow, $productFields)
+    public function getTooBigCostProductsError(Workflow $workflow)
     {
         $tooSmallProducts = [];
 
@@ -170,7 +168,7 @@ class ProductValidator
      *
      * @return mixed
      */
-    public function setCorrectProductFilters(Workflow $workflow, Array $productFields)
+    public function setCorrectProductFilters(Workflow $workflow, Array $productFields = Product::PRODUCT_DB_FIELDS)
     {
         $filterStep = (new FilterStep())->add($this->filterManager->getMinStockCountFilter());
         /** @var FilterManager $this->filterManager */
@@ -188,10 +186,10 @@ class ProductValidator
 //            ->add($this->filterManager->getProductNameFilter())
 //            ->add($this->filterManager->getProductDescriptionFilter())
 
-        foreach ($productFields as $field) {
+        foreach ($productFields as $key => $field) {
             $filterStep = (new FilterStep())
                 /** @var FilterManager $this ->filterManager */
-                ->add($this->filterManager->getBlankFieldFilters('strProductStock'));
+                ->add($this->filterManager->getBlankFieldFilters($field));
 
             /** @var Workflow $workflow */
             $workflow->addStep($filterStep);

@@ -20,6 +20,14 @@ class Product
     const COST = 'Cost in GBP';
     const DISCONTINUED = 'Discontinued';
 
+    const PRODUCT_DB_FIELDS = [
+        'CODE' => 'strProductCode',
+        'NAME' => 'strProductName',
+        'DESCRIPTION' => 'strProductDesc',
+        'STOCK' => 'strProductStock',
+        'COST' => 'strProductCost',
+    ];
+
     /**
      * @var string
      *

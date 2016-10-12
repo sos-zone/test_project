@@ -64,48 +64,41 @@ class StrProductCommand extends ContainerAwareCommand
                 $output->writeln('<error>Invalid data headers! Please, check it.</error>');
             } else {
 
-                $productFields = [
-                    'strProductCode',
-                    'strProductName',
-                    'strProductDesc',
-                    'strProductStock',
-                    'strProductCost'
-                ];
-
                 $workflow = $this->getContainer()->get('workflow.manager')->getWorkflowInstance($csvReader);
                 if (is_null($workflow)) {
                     throw new Exception('Runtime error');
                 }
 
                 /*  Get errors row instancies  */
-//                if (is_array($fieldBlankResult = $productValidator->getBlankFieldsErrors($workflow, $productFields))) {
-//                    if (count($errList)>0) {
-//                        $errList = array_merge($errList, $fieldBlankResult);
-//                    } else {
-//                        $errList = $fieldBlankResult;
-//                    }
-//                }
-//
-//                if (is_array($tooSmallProducts = $productValidator->getTooSmallProductsError($workflow, $productFields))) {
-//                    if (count($errList)>0) {
-//                        $errList = array_merge($errList, $tooSmallProducts);
-//                    } else {
-//                        $errList = $tooSmallProducts;
-//                    }
-//                }
-//
-//                if (is_array($tooBigCostProducts = $productValidator->getTooBigCostProductsError($workflow, $productFields))) {
-//                    if (count($errList)>0) {
-//                        $errList = array_merge($errList, $tooBigCostProducts);
-//                    } else {
-//                        $errList = $tooBigCostProducts;
-//                    }
-//                }
+                if (is_array($fieldBlankResult = $productValidator->getBlankFieldsErrors($workflow))) {
+                    if (count($errList)>0) {
+                        $errList = array_merge($errList, $fieldBlankResult);
+                    } else {
+                        $errList = $fieldBlankResult;
+                    }
+                }
+
+                if (is_array($tooSmallProducts = $productValidator->getTooSmallProductsError($workflow))) {
+                    if (count($errList)>0) {
+                        $errList = array_merge($errList, $tooSmallProducts);
+                    } else {
+                        $errList = $tooSmallProducts;
+                    }
+                }
+
+                if (is_array($tooBigCostProducts = $productValidator->getTooBigCostProductsError($workflow))) {
+                    if (count($errList)>0) {
+                        $errList = array_merge($errList, $tooBigCostProducts);
+                    } else {
+                        $errList = $tooBigCostProducts;
+                    }
+                }
 
 
+                $workflow = $this->getContainer()->get('workflow.manager')->getWorkflowInstance($csvReader);
                 $workflow = $converterManager->setStringToIntConverter($workflow);
                 $workflow = $converterManager->setStringToDecimalConverter($workflow);
-                $workflow = $productValidator->setCorrectProductFilters($workflow, $productFields);
+                $workflow = $productValidator->setCorrectProductFilters($workflow);
                 $workflow = $converterManager->setProductDiscontinuedConverter($workflow);
                 $workflow = $converterManager->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
@@ -122,8 +115,9 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
+                /** @var ProductError $error */
                 foreach ($errList as $error) {
-//                    $output->writeln('<fg=red>Line ' . $error->getRowNum() . ': ' . $error->getMessage() . '</fg=red>');
+                    $output->writeln('<fg=red>Line ' . $error->getErrCount() . ': ' . $error->getMessage() . '</fg=red>');
                 }
             }
         }
