@@ -36,7 +36,7 @@ class ConverterManager
     public function setStringToIntConverter(Workflow $workflow)
     {
         $StringToIntConverter = new ArrayValueConverterMap([
-            Product::STOCK => [function ($input) {
+            'strProductStock' => [function ($input) {
                 if (is_string($input)) {
                     return (int)str_replace(' ', '', $input);
                 }
@@ -56,7 +56,7 @@ class ConverterManager
     public function setStringToDecimalConverter(Workflow $workflow)
     {
         $stringToDecimalConverter = new ArrayValueConverterMap([
-            Product::COST => [function ($input) {
+            'strProductCost' => [function ($input) {
                 if (is_string($input)) {
                     return floatval(str_replace(' ', '', $input));
                 }
@@ -76,7 +76,7 @@ class ConverterManager
     public function setProductDiscontinuedConverter(Workflow $workflow)
     {
         $converter = new ArrayValueConverterMap([
-            Product::DISCONTINUED => [function ($input) {
+            'strProductDiscontinued' => [function ($input) {
                 if ('' == $input) {
                     return 0;
                 } else if ('yes' == $input || 'true' == $input) {
@@ -96,29 +96,4 @@ class ConverterManager
 
         return $workflow;
     }
-
-    public function setDiscontinuedProductDateConverter(Workflow $workflow, $now)
-    {
-        $converter = new ArrayValueConverterMap([
-            Product::DISCONTINUED => [function ($input) {
-                if ('' == $input) {
-                    return 'false';
-                } else if ('yes' == $input | 'true' == $input) {
-                    return str_replace('yes', 'true', $input);
-                } else {
-                    return str_replace($input, 'false', $input);
-                }
-            }]
-        ]);
-
-        $converterStep = (new ConverterStep())
-            ->add($converter);
-
-        /** @var Workflow $workflow */
-        $workflow->addStep($converterStep);
-
-
-        return $workflow;
-    }
-
 }

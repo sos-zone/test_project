@@ -19,7 +19,7 @@ class WriterManager
     public function setDoctrineWriter(Workflow $workflow, $testMode = true)
     {
         if (! $testMode) {
-            $doctrineWriter = new DoctrineWriter($this->em, 'TestBundle:Product');
+            $doctrineWriter = new DoctrineWriter($this->em, 'TestBundle:Product', 'strProductCode');
             $doctrineWriter->disableTruncate();
             $workflow->addWriter($doctrineWriter);
         }

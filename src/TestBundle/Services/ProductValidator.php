@@ -177,16 +177,16 @@ class ProductValidator
     {
         $filterStep = (new FilterStep())
             /** @var FilterManager $this->filterManager */
-            ->add($this->filterManager->getProductCodeFilter())
-            ->add($this->filterManager->getProductNameFilter())
-            ->add($this->filterManager->getProductDescriptionFilter())
-            ->add($this->filterManager->getMinStockCountFilter())
-            ->add($this->filterManager->getMinCostFilter())
-            ->add($this->filterManager->getMinStockCountFilter())
+//            ->add($this->filterManager->getProductCodeFilter())
+//            ->add($this->filterManager->getProductNameFilter())
+//            ->add($this->filterManager->getProductDescriptionFilter())
+//            ->add($this->filterManager->getMinStockCountFilter())
+//            ->add($this->filterManager->getMinCostFilter())
+//            ->add($this->filterManager->getMinStockCountFilter())
         ;
 
         foreach ($productFields as $fieldName) {
-            $filterStep->add($this->filterManager->getBlankFieldFilters($fieldName));
+//            $filterStep->add($this->filterManager->getBlankFieldFilters($fieldName));
         }
 
         return $workflow

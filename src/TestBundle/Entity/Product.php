@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * Product
  *
- * @ORM\Table(name="tblProductData", uniqueConstraints={@ORM\UniqueConstraint(name="strProductCode", columns={"strProductCode"})})
+ * @ORM\Table(name="tblProductData")
  * @ORM\Entity(repositoryClass="TestBundle\Entity\Repository\ProductRepository")
  */
 class Product
@@ -33,35 +33,35 @@ class Product
      *
      * @ORM\Column(name="strProductDesc", type="string", length=255, nullable=false)
      */
-    private $description;
+    private $strProductDesc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="strProductCode", type="string", length=10, nullable=false)
      */
-    private $code;
+    private $strProductCode;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="strProductStock", type="integer", nullable=false)
      */
-    private $stock;
+    private $strProductStock;
 
     /**
      * @var float
      *
      * @ORM\Column(name="strProductCost", type="decimal", precision=11, scale=2, nullable=false)
      */
-    private $cost;
+    private $strProductCost;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="strProductDiscontinued", type="boolean", nullable=false)
      */
-    private $discontinued;
+    private $strProductDiscontinued;
 
     /**
      * @var \DateTime
@@ -80,16 +80,16 @@ class Product
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="stmTimestamp", type="datetime", nullable=false)
+     * @ORM\Column(name="stmTimestamp", type="datetime", nullable=true)
      */
     private $stmtimestamp;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="intProductDataId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $intproductdataid;
 
@@ -119,118 +119,118 @@ class Product
     }
 
     /**
-     * Set description
+     * Set strProductDesc
      *
-     * @param string $description
+     * @param string $strProductDesc
      * @return product
      */
-    public function setDescription($description)
+    public function setStrProductDesc($strProductDesc)
     {
-        $this->description = $description;
+        $this->strProductDesc = $strProductDesc;
 
         return $this;
     }
 
     /**
-     * Get $description
+     * Get $strProductDesc
      *
-     * @return string 
+     * @return string
      */
-    public function getDescription()
+    public function getStrProductDesc()
     {
-        return $this->description;
+        return $this->strProductDesc;
     }
 
     /**
-     * Set code
+     * Set strProductCode
      *
-     * @param string $code
+     * @param string $strProductCode
      * @return Product
      */
-    public function setCode($code)
+    public function setStrProductCode($strProductCode)
     {
-        $this->code = $code;
+        $this->strProductCode = $strProductCode;
 
         return $this;
     }
 
     /**
-     * Get code
+     * Get $strProductCode
      *
-     * @return string 
+     * @return string
      */
-    public function getCode()
+    public function getStrProductCode()
     {
-        return $this->code;
+        return $this->strProductCode;
     }
 
     /**
-     * Set Stock
+     * Set $strProductStock
      *
-     * @param integer $stock
+     * @param integer $strProductStock
      * @return Product
      */
-    public function setStock($stock)
+    public function setStrProductStock($strProductStock)
     {
-        $this->stock = $stock;
+        $this->strProductStock = $strProductStock;
 
         return $this;
     }
 
     /**
-     * Get stock
+     * Get strProductStock
      *
      * @return integer
      */
-    public function getStock()
+    public function getStrProductStock()
     {
-        return $this->stock;
+        return $this->strProductStock;
     }
 
     /**
-     * Set cost
+     * Set strProductCost
      *
-     * @param float $cost
+     * @param float $strProductCost
      * @return Product
      */
-    public function setCost($cost)
+    public function setStrProductCost($strProductCost)
     {
-        $this->cost = $cost;
+        $this->strProductCost = $strProductCost;
 
         return $this;
     }
 
     /**
-     * Get cost
+     * Get strProductCost
      *
      * @return float
      */
-    public function getCost()
+    public function getStrProductCost()
     {
-        return $this->cost;
+        return $this->strProductCost;
     }
 
     /**
-     * Set discontinued
+     * Set strProductDiscontinued
      *
-     * @param boolean $discontinued
+     * @param boolean $strProductDiscontinued
      * @return Product
      */
-    public function setDiscontinued($discontinued)
+    public function setStrProductDiscontinued($strProductDiscontinued)
     {
-        $this->discontinued = $discontinued;
+        $this->strProductDiscontinued = $strProductDiscontinued;
 
         return $this;
     }
 
     /**
-     * is discontinued
+     * is strProductDiscontinued
      *
      * @return boolean
      */
-    public function isDiscontinued()
+    public function isStrProductDiscontinued()
     {
-        return $this->discontinued;
+        return $this->strProductDiscontinued;
     }
 
     /**
@@ -249,7 +249,7 @@ class Product
     /**
      * Get dtmadded
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDtmadded()
     {
@@ -272,7 +272,7 @@ class Product
     /**
      * Get dtmdiscontinued
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDtmdiscontinued()
     {
@@ -295,7 +295,7 @@ class Product
     /**
      * Get stmtimestamp
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStmtimestamp()
     {
@@ -305,7 +305,7 @@ class Product
     /**
      * Get intproductdataid
      *
-     * @return integer 
+     * @return integer
      */
     public function getIntproductdataid()
     {

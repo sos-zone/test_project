@@ -107,7 +107,6 @@ class StrProductCommand extends ContainerAwareCommand
                 $workflow = $converterManager->setStringToDecimalConverter($workflow);
                 $workflow = $productValidator->setCorrectProductFilters($workflow, $productFields);
                 $workflow = $converterManager->setProductDiscontinuedConverter($workflow);
-//                $workflow = $converterManager->->setDiscontinuedProductDateConverter($workflow, $now);
                 $workflow = $converterManager->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
