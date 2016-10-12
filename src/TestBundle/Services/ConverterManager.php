@@ -33,16 +33,56 @@ class ConverterManager
         return $workflow;
     }
 
+    public function setStringToIntConverter(Workflow $workflow)
+    {
+        $StringToIntConverter = new ArrayValueConverterMap([
+            Product::STOCK => [function ($input) {
+                if (is_string($input)) {
+                    return (int)str_replace(' ', '', $input);
+                }
+            }]
+        ]);
+
+        $converterStep = (new ConverterStep())
+            ->add($StringToIntConverter);
+
+        /** @var Workflow $workflow */
+        $workflow->addStep($converterStep);
+
+
+        return $workflow;
+    }
+
+    public function setStringToDecimalConverter(Workflow $workflow)
+    {
+        $stringToDecimalConverter = new ArrayValueConverterMap([
+            Product::COST => [function ($input) {
+                if (is_string($input)) {
+                    return floatval($input);
+                }
+            }]
+        ]);
+
+        $converterStep = (new ConverterStep())
+            ->add($stringToDecimalConverter);
+
+        /** @var Workflow $workflow */
+        $workflow->addStep($converterStep);
+
+
+        return $workflow;
+    }
+
     public function setProductDiscontinuedConverter(Workflow $workflow)
     {
         $converter = new ArrayValueConverterMap([
             Product::DISCONTINUED => [function ($input) {
                 if ('' == $input) {
-                    return "0";
+                    return 0;
                 } else if ('yes' == $input || 'true' == $input) {
-                    return str_replace($input, "1", $input);
+                    return str_replace($input, 1, $input);
                 } else {
-                    return str_replace($input, "0", $input);
+                    return str_replace($input, 0, $input);
                 }
             }]
         ]);

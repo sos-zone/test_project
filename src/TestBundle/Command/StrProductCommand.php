@@ -76,37 +76,41 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 /*  Get errors row instancies  */
-                if (is_array($fieldBlankResult = $this->getContainer()->get('product.validator')
-                    ->getBlankFieldsErrors($workflow, $productFields))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $fieldBlankResult);
-                    } else {
-                        $errList = $fieldBlankResult;
-                    }
-                }
+//                if (is_array($fieldBlankResult = $this->getContainer()->get('product.validator')
+//                    ->getBlankFieldsErrors($workflow, $productFields))) {
+//                    if (count($errList)>0) {
+//                        $errList = array_merge($errList, $fieldBlankResult);
+//                    } else {
+//                        $errList = $fieldBlankResult;
+//                    }
+//                }
+//
+//                if (is_array($tooSmallProducts = $this->getContainer()->get('product.validator')
+//                    ->getTooSmallProductsError($workflow, $productFields))) {
+//                    if (count($errList)>0) {
+//                        $errList = array_merge($errList, $tooSmallProducts);
+//                    } else {
+//                        $errList = $tooSmallProducts;
+//                    }
+//                }
+//
+//                if (is_array($tooBigCostProducts = $this->getContainer()->get('product.validator')
+//                    ->getTooBigCostProductsError($workflow, $productFields))) {
+//                    if (count($errList)>0) {
+//                        $errList = array_merge($errList, $tooBigCostProducts);
+//                    } else {
+//                        $errList = $tooBigCostProducts;
+//                    }
+//                }
 
-                if (is_array($tooSmallProducts = $this->getContainer()->get('product.validator')
-                    ->getTooSmallProductsError($workflow, $productFields))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $tooSmallProducts);
-                    } else {
-                        $errList = $tooSmallProducts;
-                    }
-                }
 
-                if (is_array($tooBigCostProducts = $this->getContainer()->get('product.validator')
-                    ->getTooBigCostProductsError($workflow, $productFields))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $tooBigCostProducts);
-                    } else {
-                        $errList = $tooBigCostProducts;
-                    }
-                }
-
+                $workflow = $this->getContainer()->get('converter.manager')->setStringToIntConverter($workflow);
+                $workflow = $this->getContainer()->get('converter.manager')->setStringToDecimalConverter($workflow);
                 $workflow = $this->getContainer()->get('product.validator')->setCorrectProductFilters($workflow, $productFields);
-                $workflow = $this->getContainer()->get('converter.manager')->setMappingValueConverter($workflow);
+
 //                $workflow = $this->getContainer()->get('converter.manager')->setProductDiscontinuedConverter($workflow);
 //                $workflow = $this->getContainer()->get('converter.manager')->setDiscontinuedProductDateConverter($workflow, $now);
+                $workflow = $this->getContainer()->get('converter.manager')->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
 
