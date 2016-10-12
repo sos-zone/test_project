@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "09efa5255f5cb2b50de5b61525ac5ee9",
-    "content-hash": "eabd8dde407267c0faf67ddded38df62",
+    "hash": "0d4eade84003f53d59c51b85f729a08d",
+    "content-hash": "0f90022478f7659062c58b9de5c69429",
     "packages": [
         {
             "name": "ddeboer/data-import",
-            "version": "dev-master",
+            "version": "0.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ddeboer/data-import.git",
@@ -3955,9 +3955,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ddeboer/data-import": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
