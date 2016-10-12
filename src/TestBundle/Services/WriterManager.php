@@ -6,6 +6,10 @@ use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Writer\DoctrineWriter;
 use TestBundle\Entity\Product;
 
+use Ddeboer\DataImport\Writer\ConsoleTableWriter;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Helper\Table;
+
 class WriterManager
 {
     private $em;
@@ -22,6 +26,19 @@ class WriterManager
             $doctrineWriter->disableTruncate();
             $workflow->addWriter($doctrineWriter);
         }
+
+        return $workflow;
+    }
+
+    public function setConsoleWriter(Workflow $workflow)
+    {
+        $output = new ConsoleOutput();
+
+        $table = new Table($output);
+
+        $table->setStyle('compact');
+
+        $workflow->addWriter(new ConsoleTableWriter($output, $table));
 
         return $workflow;
     }

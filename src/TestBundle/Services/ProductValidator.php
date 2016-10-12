@@ -7,7 +7,6 @@ use TestBundle\Entity\Product;
 use Ddeboer\DataImport\Workflow;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Step\FilterStep;
-use TestBundle\Helper\ProductError;
 use TestBundle\Services\FilterManager;
 
 class ProductValidator
@@ -42,125 +41,6 @@ class ProductValidator
     }
 
     /**
-     * Check is product already exists
-     * @param string $code
-     * @return boolean
-     */
-    public function isProductExists($code)
-    {
-        return $this->productRepository->findOneByCode($code);
-    }
-
-    /**
-     * Check is product have blank fields
-     *
-     * @param Workflow $workflow
-     * @param $productFields
-     *
-     * @return mixed
-     */
-    public function getBlankFieldsErrors(Workflow $workflow, Array $productFields = Product::PRODUCT_DB_FIELDS)
-    {
-        $errBlankType = [];
-
-        foreach ($productFields as $fieldName) {
-
-            $filterStep = (new FilterStep())
-                /** @var FilterManager $this->filterManager */
-                ->add($this->filterManager->getBlankFieldFilters($fieldName));
-
-            /** @var Workflow $workflow */
-            $result = $workflow
-                ->addStep($filterStep)
-                ->process();
-
-            /** @var Result $result */
-            if ($result->getErrorCount()>0) {
-                array_push(
-                    $errBlankType,
-                    new ProductError(
-                        $result->getErrorCount(),
-                        $fieldName.ProductValidator::BLANK_DATA,
-                        $fieldName
-                    )
-                );
-            }
-
-        }
-
-        return 0 == count($errBlankType) ? null : $errBlankType;
-    }
-
-    /**
-     * get too small Product Errors
-     *
-     * @param Workflow $workflow
-     *
-     * @return mixed
-     */
-    public function getTooSmallProductsError(Workflow $workflow)
-    {
-        $tooSmallProducts = [];
-
-        $filterStep = (new FilterStep())
-            /** @var FilterManager $this->filterManager */
-            ->add($this->filterManager->getMinStockCountFilter())
-            ->add($this->filterManager->getMinCostFilter());
-
-        /** @var Workflow $workflow */
-        $result = $workflow
-            ->addStep($filterStep)
-            ->process();
-
-        /** @var Result $result */
-        if ($result->getErrorCount()>0) {
-            array_push(
-                $tooSmallProducts,
-                new ProductError(
-                    $result->getErrorCount(),
-                    ProductValidator::TOO_SMALL_STOCK
-                )
-            );
-        }
-
-        return 0 == count($tooSmallProducts) ? null : $tooSmallProducts;
-    }
-
-    /**
-     * get Too Big Cost Product Errors
-     *
-     * @param Workflow $workflow
-     *
-     * @return mixed
-     */
-    public function getTooBigCostProductsError(Workflow $workflow)
-    {
-        $tooSmallProducts = [];
-
-        $filterStep = (new FilterStep())
-            /** @var FilterManager $this->filterManager */
-            ->add($this->filterManager->getMinStockCountFilter());
-
-        /** @var Workflow $workflow */
-        $result = $workflow
-            ->addStep($filterStep)
-            ->process();
-
-        /** @var Result $result */
-        if ($result->getErrorCount()>0) {
-            array_push(
-                $tooSmallProducts,
-                new ProductError(
-                    $result->getErrorCount(),
-                    ProductValidator::TOO_BIG_STOCK
-                )
-            );
-        }
-
-        return 0 == count($tooSmallProducts) ? null : $tooSmallProducts;
-    }
-
-    /**
      * set Correct Product filters
      *
      * @param Workflow $workflow
@@ -181,10 +61,6 @@ class ProductValidator
         $filterStep = (new FilterStep())->add($this->filterManager->getMinStockCountFilter());
         /** @var FilterManager $this->filterManager */
         $workflow->addStep($filterStep);
-
-//            ->add($this->filterManager->getProductCodeFilter())
-//            ->add($this->filterManager->getProductNameFilter())
-//            ->add($this->filterManager->getProductDescriptionFilter())
 
         foreach ($productFields as $key => $field) {
             $filterStep = (new FilterStep())

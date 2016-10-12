@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Reader\CsvReader;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
-use TestBundle\Helper\ProductError;
 use TestBundle\Services\ProductValidator;
 
 class StrProductCommand extends ContainerAwareCommand
@@ -69,32 +68,6 @@ class StrProductCommand extends ContainerAwareCommand
                     throw new Exception('Runtime error');
                 }
 
-                /*  Get errors row instancies  */
-                if (is_array($fieldBlankResult = $productValidator->getBlankFieldsErrors($workflow))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $fieldBlankResult);
-                    } else {
-                        $errList = $fieldBlankResult;
-                    }
-                }
-
-                if (is_array($tooSmallProducts = $productValidator->getTooSmallProductsError($workflow))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $tooSmallProducts);
-                    } else {
-                        $errList = $tooSmallProducts;
-                    }
-                }
-
-                if (is_array($tooBigCostProducts = $productValidator->getTooBigCostProductsError($workflow))) {
-                    if (count($errList)>0) {
-                        $errList = array_merge($errList, $tooBigCostProducts);
-                    } else {
-                        $errList = $tooBigCostProducts;
-                    }
-                }
-
-
                 $workflow = $this->getContainer()->get('workflow.manager')->getWorkflowInstance($csvReader);
                 $workflow = $converterManager->setStringToIntConverter($workflow);
                 $workflow = $converterManager->setStringToDecimalConverter($workflow);
@@ -102,6 +75,7 @@ class StrProductCommand extends ContainerAwareCommand
                 $workflow = $converterManager->setProductDiscontinuedConverter($workflow);
                 $workflow = $converterManager->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
+                $workflow = $this->getContainer()->get('writer.manager')->setConsoleWriter($workflow);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
 
 
@@ -115,10 +89,6 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
-                /** @var ProductError $error */
-                foreach ($errList as $error) {
-                    $output->writeln('<fg=red>Line ' . $error->getErrCount() . ': ' . $error->getMessage() . '</fg=red>');
-                }
             }
         }
     }
