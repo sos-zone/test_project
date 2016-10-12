@@ -42,6 +42,8 @@ class StrProductCommand extends ContainerAwareCommand
             $errList = [];
             $testMode = 'test' == $input->getOption('testMode') ? true : false;
             $returnErr = false;
+            $converterManager = $this->getContainer()->get('converter.manager');
+            $productValidator = $this->getContainer()->get('product.validator');
 
             $file = new \SplFileObject($input->getArgument('filePath'));
             $csvReader = new CsvReader($file);
@@ -76,8 +78,7 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 /*  Get errors row instancies  */
-//                if (is_array($fieldBlankResult = $this->getContainer()->get('product.validator')
-//                    ->getBlankFieldsErrors($workflow, $productFields))) {
+//                if (is_array($fieldBlankResult = $productValidator->getBlankFieldsErrors($workflow, $productFields))) {
 //                    if (count($errList)>0) {
 //                        $errList = array_merge($errList, $fieldBlankResult);
 //                    } else {
@@ -85,8 +86,7 @@ class StrProductCommand extends ContainerAwareCommand
 //                    }
 //                }
 //
-//                if (is_array($tooSmallProducts = $this->getContainer()->get('product.validator')
-//                    ->getTooSmallProductsError($workflow, $productFields))) {
+//                if (is_array($tooSmallProducts = $productValidator->getTooSmallProductsError($workflow, $productFields))) {
 //                    if (count($errList)>0) {
 //                        $errList = array_merge($errList, $tooSmallProducts);
 //                    } else {
@@ -94,8 +94,7 @@ class StrProductCommand extends ContainerAwareCommand
 //                    }
 //                }
 //
-//                if (is_array($tooBigCostProducts = $this->getContainer()->get('product.validator')
-//                    ->getTooBigCostProductsError($workflow, $productFields))) {
+//                if (is_array($tooBigCostProducts = $productValidator->getTooBigCostProductsError($workflow, $productFields))) {
 //                    if (count($errList)>0) {
 //                        $errList = array_merge($errList, $tooBigCostProducts);
 //                    } else {
@@ -104,13 +103,12 @@ class StrProductCommand extends ContainerAwareCommand
 //                }
 
 
-                $workflow = $this->getContainer()->get('converter.manager')->setStringToIntConverter($workflow);
-                $workflow = $this->getContainer()->get('converter.manager')->setStringToDecimalConverter($workflow);
-                $workflow = $this->getContainer()->get('product.validator')->setCorrectProductFilters($workflow, $productFields);
-
-//                $workflow = $this->getContainer()->get('converter.manager')->setProductDiscontinuedConverter($workflow);
-//                $workflow = $this->getContainer()->get('converter.manager')->setDiscontinuedProductDateConverter($workflow, $now);
-                $workflow = $this->getContainer()->get('converter.manager')->setMappingValueConverter($workflow);
+                $workflow = $converterManager->setStringToIntConverter($workflow);
+                $workflow = $converterManager->setStringToDecimalConverter($workflow);
+                $workflow = $productValidator->setCorrectProductFilters($workflow, $productFields);
+                $workflow = $converterManager->setProductDiscontinuedConverter($workflow);
+//                $workflow = $converterManager->->setDiscontinuedProductDateConverter($workflow, $now);
+                $workflow = $converterManager->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
 

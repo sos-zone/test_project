@@ -58,7 +58,7 @@ class ConverterManager
         $stringToDecimalConverter = new ArrayValueConverterMap([
             Product::COST => [function ($input) {
                 if (is_string($input)) {
-                    return floatval($input);
+                    return floatval(str_replace(' ', '', $input));
                 }
             }]
         ]);
