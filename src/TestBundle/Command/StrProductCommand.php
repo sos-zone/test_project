@@ -65,11 +65,11 @@ class StrProductCommand extends ContainerAwareCommand
             } else {
 
                 $productFields = [
-                    Product::CODE,
-                    Product::NAME,
-                    Product::DESCRIPTION,
-                    Product::STOCK,
-                    Product::COST,
+                    'strProductCode',
+                    'strProductName',
+                    'strProductDesc',
+                    'strProductStock',
+                    'strProductCost'
                 ];
 
                 $workflow = $this->getContainer()->get('workflow.manager')->getWorkflowInstance($csvReader);

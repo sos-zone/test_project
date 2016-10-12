@@ -2,10 +2,8 @@
 
 namespace TestBundle\Services;
 
-use Ddeboer\DataImport\ValueConverter\MappingValueConverter;
 use TestBundle\Services\ArrayValueConverterMap;
 use Ddeboer\DataImport\Workflow;
-use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use Ddeboer\DataImport\Step\ConverterStep;
 use Ddeboer\DataImport\Step\MappingStep;

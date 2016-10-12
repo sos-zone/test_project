@@ -2,10 +2,8 @@
 
 namespace TestBundle\Services;
 
-use Ddeboer\DataImport\ValueConverter\MappingValueConverter;
 use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Writer\DoctrineWriter;
-use TestBundle\Entity\Product;
 
 class WriterManager
 {

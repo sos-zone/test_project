@@ -5,13 +5,10 @@ namespace TestBundle\Services;
 use Ddeboer\DataImport\Result;
 use TestBundle\Entity\Product;
 use Ddeboer\DataImport\Workflow;
-use Ddeboer\DataImport\Reader\CsvReader;
-use Ddeboer\DataImport\Workflow\StepAggregator;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ddeboer\DataImport\Step\FilterStep;
 use TestBundle\Helper\ProductError;
 use TestBundle\Services\FilterManager;
-use Ddeboer\DataImport\Writer\ArrayWriter;
 
 class ProductValidator
 {
@@ -175,21 +172,31 @@ class ProductValidator
      */
     public function setCorrectProductFilters(Workflow $workflow, Array $productFields)
     {
-        $filterStep = (new FilterStep())
-            /** @var FilterManager $this->filterManager */
+        $filterStep = (new FilterStep())->add($this->filterManager->getMinStockCountFilter());
+        /** @var FilterManager $this->filterManager */
+        $workflow->addStep($filterStep);
+
+        $filterStep = (new FilterStep())->add($this->filterManager->getMinCostFilter());
+        /** @var FilterManager $this->filterManager */
+        $workflow->addStep($filterStep);
+
+        $filterStep = (new FilterStep())->add($this->filterManager->getMinStockCountFilter());
+        /** @var FilterManager $this->filterManager */
+        $workflow->addStep($filterStep);
+
 //            ->add($this->filterManager->getProductCodeFilter())
 //            ->add($this->filterManager->getProductNameFilter())
 //            ->add($this->filterManager->getProductDescriptionFilter())
-//            ->add($this->filterManager->getMinStockCountFilter())
-//            ->add($this->filterManager->getMinCostFilter())
-//            ->add($this->filterManager->getMinStockCountFilter())
-        ;
 
-        foreach ($productFields as $fieldName) {
-//            $filterStep->add($this->filterManager->getBlankFieldFilters($fieldName));
+        foreach ($productFields as $field) {
+            $filterStep = (new FilterStep())
+                /** @var FilterManager $this ->filterManager */
+                ->add($this->filterManager->getBlankFieldFilters('strProductStock'));
+
+            /** @var Workflow $workflow */
+            $workflow->addStep($filterStep);
         }
 
-        return $workflow
-            ->addStep($filterStep);
+        return $workflow;
     }
 }

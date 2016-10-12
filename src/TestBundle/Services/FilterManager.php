@@ -2,14 +2,8 @@
 
 namespace TestBundle\Services;
 
-use Ddeboer\DataImport\Result;
 use TestBundle\Entity\Product;
-use Ddeboer\DataImport\Workflow;
-use Ddeboer\DataImport\Reader\CsvReader;
-use Ddeboer\DataImport\Workflow\StepAggregator;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ddeboer\DataImport\Step\FilterStep;
-use TestBundle\Helper\ProductError;
 
 class FilterManager
 {
@@ -39,7 +33,7 @@ class FilterManager
      */
     public function getMinStockCountFilter()
     {
-        return $this->getFilter(Product::STOCK, new Assert\GreaterThan(ProductValidator::MIN_STOCK_COUNT));
+        return $this->getFilter('strProductStock', new Assert\GreaterThan(ProductValidator::MIN_STOCK_COUNT));
     }
 
     /**
@@ -49,7 +43,7 @@ class FilterManager
      */
     public function getMinCostFilter()
     {
-        return $this->getFilter(Product::COST, new Assert\GreaterThan(ProductValidator::MIN_COST));
+        return $this->getFilter('strProductCost', new Assert\GreaterThan(ProductValidator::MIN_COST));
     }
 
     /**
@@ -59,7 +53,7 @@ class FilterManager
      */
     public function getMaxCostFilter()
     {
-        return $this->getFilter(Product::COST, new Assert\LessThan(ProductValidator::MAX_COST));
+        return $this->getFilter('strProductCost', new Assert\LessThan(ProductValidator::MAX_COST));
     }
 
     /**
