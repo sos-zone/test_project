@@ -14,12 +14,12 @@ class ConverterManager
 {
     public function setMappingValueConverter(Workflow $workflow)
     {
-        $codeMappingStep = (new MappingStep())->map(Product::CODE, 'strProductCode');
-        $nameMappingStep = (new MappingStep())->map(Product::NAME, 'strProductName');
-        $descMappingStep = (new MappingStep())->map(Product::DESCRIPTION, 'strProductDesc');
-        $stockMappingStep = (new MappingStep())->map(Product::STOCK, 'strProductStock');
-        $costMappingStep = (new MappingStep())->map(Product::COST, 'strProductCost');
-        $discontinuedMappingStep = (new MappingStep())->map(Product::DISCONTINUED, 'strProductDiscontinued');
+        $codeMappingStep = (new MappingStep())->map('['.Product::CODE.']', '[strProductCode]');
+        $nameMappingStep = (new MappingStep())->map('['.Product::NAME.']', '[strProductName]');
+        $descMappingStep = (new MappingStep())->map('['.Product::DESCRIPTION.']', '[strProductDesc]');
+        $stockMappingStep = (new MappingStep())->map('['.Product::STOCK.']', '[strProductStock]');
+        $costMappingStep = (new MappingStep())->map('['.Product::COST.']', '[strProductCost]');
+        $discontinuedMappingStep = (new MappingStep())->map('['.Product::DISCONTINUED.']', '[strProductDiscontinued]');
 
         /** @var Workflow $workflow */
         $workflow->addStep($codeMappingStep);

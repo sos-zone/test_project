@@ -105,7 +105,7 @@ class StrProductCommand extends ContainerAwareCommand
 
                 $workflow = $this->getContainer()->get('product.validator')->setCorrectProductFilters($workflow, $productFields);
                 $workflow = $this->getContainer()->get('converter.manager')->setMappingValueConverter($workflow);
-                $workflow = $this->getContainer()->get('converter.manager')->setProductDiscontinuedConverter($workflow);
+//                $workflow = $this->getContainer()->get('converter.manager')->setProductDiscontinuedConverter($workflow);
 //                $workflow = $this->getContainer()->get('converter.manager')->setDiscontinuedProductDateConverter($workflow, $now);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
