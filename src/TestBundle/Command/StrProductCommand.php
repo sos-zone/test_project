@@ -13,6 +13,7 @@ use Ddeboer\DataImport\Reader\CsvReader;
 use Symfony\Component\Validator\Constraints\DateTime;
 use TestBundle\Entity\Product;
 use TestBundle\Services\ProductValidator;
+use Ddeboer\DataImport\Exception\ValidationException;
 
 class StrProductCommand extends ContainerAwareCommand
 {
@@ -89,6 +90,13 @@ class StrProductCommand extends ContainerAwareCommand
                 }
 
                 $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
+
+                /** @var ValidationException $exception */
+                foreach ($result->getExceptions() as $exception) {
+                    foreach ($exception->getViolations() as $violation) {
+                        $output->writeln('<fg=red>Error '.$violation->getMessage().'</fg=red>');
+                    }
+                }
             }
         }
     }

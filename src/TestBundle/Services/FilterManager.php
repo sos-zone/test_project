@@ -4,6 +4,7 @@ namespace TestBundle\Services;
 
 use TestBundle\Entity\Product;
 use Symfony\Component\Validator\Constraints as Assert;
+use TestBundle\Services\CustomAssert as CustomAssert;
 
 class FilterManager
 {
@@ -53,7 +54,7 @@ class FilterManager
      */
     public function getMaxCostFilter()
     {
-        return $this->getFilter(Product::PRODUCT_DB_FIELDS['COST'], new Assert\LessThan(ProductValidator::MAX_COST));
+        return $this->getFilter(Product::PRODUCT_DB_FIELDS['COST'], new CustomAssert\LessThan(ProductValidator::MAX_COST));
     }
 
     /**

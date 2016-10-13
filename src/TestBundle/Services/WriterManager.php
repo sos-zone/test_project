@@ -4,7 +4,6 @@ namespace TestBundle\Services;
 
 use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Writer\DoctrineWriter;
-use Symfony\Component\Console\Output\StreamOutput;
 use TestBundle\Entity\Product;
 
 use Ddeboer\DataImport\Writer\ConsoleTableWriter;
@@ -35,8 +34,6 @@ class WriterManager
     {
         $output = new ConsoleOutput();
         $output->setVerbosity(ConsoleOutput::VERBOSITY_DEBUG);
-//        $output->sOUTPUT_PLAIN
-//        $output->setErrorOutput(Console);
 
         $table = new Table($output);
 
