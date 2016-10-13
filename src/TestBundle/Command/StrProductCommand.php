@@ -92,10 +92,17 @@ class StrProductCommand extends ContainerAwareCommand
                 $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
 
                 /** @var ValidationException $exception */
+                $consoleLines = [];
                 foreach ($result->getExceptions() as $exception) {
-                    foreach ($exception->getViolations() as $violation) {
-                        $output->writeln('<fg=red>Error '.$violation->getMessage().'</fg=red>');
+                    $line = '';
+                     foreach ((array)$exception as $field=>$value) {
+                        $line .= $value.' ';
                     }
+                    array_push($consoleLines, $line);
+                }
+
+                foreach ($consoleLines as $line) {
+                    $output->writeln('<fg=red>Product:  '.$line.'</fg=red>');
                 }
             }
         }

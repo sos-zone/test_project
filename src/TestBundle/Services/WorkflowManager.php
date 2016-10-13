@@ -4,6 +4,7 @@ namespace TestBundle\Services;
 
 use Ddeboer\DataImport\Workflow;
 use Ddeboer\DataImport\Workflow\StepAggregator;
+use DdeboerBundle\DataImport\Workflow\StepAggregator as CustomStepAggregator;
 use Ddeboer\DataImport\Reader\CsvReader;
 
 class WorkflowManager
@@ -16,7 +17,7 @@ class WorkflowManager
     public function getWorkflowInstance($reader)
     {
         if ($reader instanceof CsvReader) {
-            $workflow = new StepAggregator($reader);
+            $workflow = new CustomStepAggregator($reader);
             $workflow->setSkipItemOnFailure(true);
 
             return $workflow;
