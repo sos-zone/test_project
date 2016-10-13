@@ -154,12 +154,12 @@ class StepAggregator implements Workflow, LoggerAwareInterface
 //                $exceptions->attach($e, $index);
 //                $exceptions->attach(new \stdClass($item), $index);
                 $myProduct = $item;
-                $a = 0;
                 /** @var ConstraintViolation $violation */
                 $errorMessage = '';
                 foreach ($e->getViolations() as $violation) {
                     $errorMessage .= $violation->getMessage().' ';
                 }
+                $myProduct['lineNum'] = $count+1;
                 $myProduct['error'] = $errorMessage;
                 $exceptions->attach((object)$myProduct, $index);
                 $this->logger->error($e->getMessage());

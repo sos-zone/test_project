@@ -91,28 +91,28 @@ class StrProductCommand extends ContainerAwareCommand
 
                 $output->writeln('Skipped stock(s): ' . $result->getErrorCount());
 
+                $output->writeln('<error>Incorrect Product(s): ' . $result->getTotalProcessedCount() . '</error>');
+                $table = $this->getHelper('table');
+                $table->setHeaders([
+                        Product::DISCONTINUED,
+                        Product::COST,
+                        Product::STOCK,
+                        Product::NAME,
+                        Product::DESCRIPTION,
+                        Product::CODE,
+                        'Line Num',
+                        'Error'
+                ]);
+
                 /** @var ValidationException $exception */
-                $consoleLines = [];
                 foreach ($result->getExceptions() as $exception) {
-                    $line = '';
                     $exception = (array)$exception;
-                    $total = count($exception);
-                    $counter = 0;
-                     foreach ($exception as $field=>$value) {
-                         $counter++;
-                         if($counter == $total-1){
-                             $line .= $value.' -- ERROR: ';
-                         }
-                         else {
-                             $line .= $value.' ';
-                         }
-                    }
-                    array_push($consoleLines, $line);
+                    array_push($errList, $exception);
                 }
 
-                foreach ($consoleLines as $line) {
-                    $output->writeln('<fg=red>Product:  '.$line.'</fg=red>');
-                }
+                $table->setRows($errList);
+
+                $table->render($output);
             }
         }
     }
