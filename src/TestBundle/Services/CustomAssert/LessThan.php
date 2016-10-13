@@ -13,7 +13,7 @@ class LessThan extends SfLessThan
         self::TOO_HIGH_ERROR => 'TOO_HIGH_ERROR',
     );
 
-    public $message = 'This value should be less than {{ compared_value }}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+    public $message = 'Value should be less than {{ compared_value }}';
 
     public function __construct($options)
     {

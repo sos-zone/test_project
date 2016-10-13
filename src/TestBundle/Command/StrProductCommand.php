@@ -76,7 +76,7 @@ class StrProductCommand extends ContainerAwareCommand
                 $workflow = $converterManager->setProductDiscontinuedConverter($workflow);
                 $workflow = $converterManager->setMappingValueConverter($workflow);
                 $workflow = $this->getContainer()->get('writer.manager')->setDoctrineWriter($workflow, $testMode);
-                $workflow = $this->getContainer()->get('writer.manager')->setConsoleWriter($workflow);
+//                $workflow = $this->getContainer()->get('writer.manager')->setConsoleWriter($workflow);
                 $result = $this->getContainer()->get('workflow.manager')->execute($workflow);
 
 
@@ -95,8 +95,17 @@ class StrProductCommand extends ContainerAwareCommand
                 $consoleLines = [];
                 foreach ($result->getExceptions() as $exception) {
                     $line = '';
-                     foreach ((array)$exception as $field=>$value) {
-                        $line .= $value.' ';
+                    $exception = (array)$exception;
+                    $total = count($exception);
+                    $counter = 0;
+                     foreach ($exception as $field=>$value) {
+                         $counter++;
+                         if($counter == $total-1){
+                             $line .= $value.' -- ERROR: ';
+                         }
+                         else {
+                             $line .= $value.' ';
+                         }
                     }
                     array_push($consoleLines, $line);
                 }
